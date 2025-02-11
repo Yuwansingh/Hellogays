@@ -35,10 +35,41 @@
       font-size: 18px;
     }
 
+    /* Placeholder loading effects */
+    .placeholder-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+      gap: 5px;
+      padding: 10px;
+      justify-items: center;
+    }
+
+    .placeholder-item {
+      width: 90px;
+      background-color: #2b2b2b;
+      border-radius: 12px;
+      height: 150px;
+      animation: shimmer 1.5s infinite linear;
+      background: linear-gradient(
+        90deg,
+        #2b2b2b 25%,
+        #444 50%,
+        #2b2b2b 75%
+      );
+      background-size: 200% 100%;
+    }
+
+    @keyframes shimmer {
+      100% {
+        background-position: -200% 0;
+      }
+    }
+
+    /* Movie Container */
     .movie-container {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-      gap: 5px; /* No gaps */
+      gap: 5px;
       padding: 10px;
       justify-items: center;
     }
@@ -88,10 +119,18 @@
 
     function fetchMovies(query = "") {
       const movieRef = ref(db, "movies");
+      const movieContainer = document.getElementById("movie-container");
+      const placeholderContainer = document.getElementById("placeholder-container");
+
+      // Show placeholder until data is fetched
+      placeholderContainer.style.display = "grid";
+      movieContainer.style.display = "none";
+
       onValue(movieRef, (snapshot) => {
         const data = snapshot.val();
-        const movieContainer = document.getElementById("movie-container");
         movieContainer.innerHTML = "";
+        placeholderContainer.style.display = "none";
+        movieContainer.style.display = "grid";
 
         if (data) {
           Object.keys(data).forEach((key) => {
@@ -134,6 +173,15 @@
   <div class="search-container">
     <input type="text" class="search-box" placeholder="Search movies...">
   </div>
+
+  <!-- Placeholder content -->
+  <div id="placeholder-container" class="placeholder-container">
+    <div class="placeholder-item"></div>
+    <div class="placeholder-item"></div>
+    <div class="placeholder-item"></div>
+    <div class="placeholder-item"></div>
+  </div>
+
   <div id="movie-container" class="movie-container">Loading movies...</div>
 </body>
 </html>
