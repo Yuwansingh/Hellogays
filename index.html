@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Movie Search</title>
+  <style>
+    /* Dark Theme Setup */
+    body {
+      background-color: #121212;
+      color: #ffffff;
+      font-family: 'Arial', sans-serif;
+      margin: 0;
+      padding: 0;
+      text-align: center;
+    }
+
+    /* Search Bar Styling */
+    .search-container {
+      background-color: #1b1b1b;
+      padding: 5px;
+      text-align: center;
+    }
+
+    .search-box {
+      width: 94%;
+      max-width: 600px;
+      height: 30px;
+      padding: 10px;
+      border: none;
+      border-radius: 10px;
+      outline: none;
+      background-color: #2b2b2b;
+      color: #ffffff;
+      font-size: 18px;
+    }
+
+    .movie-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+      gap: 0px; /* No gaps */
+      padding: 10px;
+      justify-items: center;
+    }
+
+    .movie-item {
+      width: 100px;
+      background-color: #1e1e1e;
+      border-radius: 12px;
+      padding: 10px;
+      cursor: pointer;
+      transition: transform 0.3s, background-color 0.3s;
+      text-align: center;
+    }
+
+    .movie-item:hover {
+      transform: scale(1.05);
+      background-color: #ff9800;
+    }
+
+    .movie-item img {
+      width: 100%;
+      border-radius: 8px;
+    }
+
+    .movie-item h3 {
+      font-size: 18px;
+      color: #ffffff;
+      margin-top: 10px;
+    }
+  </style>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+    import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyCoa3R14n3PU8dG93NvR57eN65Jx_vQHm0",
+      authDomain: "movieappst.firebaseapp.com",
+      databaseURL: "https://movieappst-default-rtdb.firebaseio.com",
+      projectId: "movieappst",
+      storageBucket: "movieappst.firebasestorage.app",
+      appId: "1:918391465887:android:4e56bdd1881f9c51d8bfaa"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    function fetchMovies(query = "") {
+      const movieRef = ref(db, "movies");
+      onValue(movieRef, (snapshot) => {
+        const data = snapshot.val();
+        const movieContainer = document.getElementById("movie-container");
+        movieContainer.innerHTML = "";
+
+        if (data) {
+          Object.keys(data).forEach((key) => {
+            const movieData = data[key];
+            if (movieData.title.toLowerCase().includes(query.toLowerCase())) {
+              const movieItem = document.createElement("div");
+              movieItem.classList.add("movie-item");
+
+              movieItem.innerHTML = `
+                <img src="${movieData.thumbnail}" alt="${movieData.title}" loading="lazy">
+                <h3>${movieData.title}</h3>
+              `;
+
+              movieItem.addEventListener("click", () => {
+                window.location.href = `preview.html?url=${encodeURIComponent(movieData.url)}`;
+              });
+
+              movieContainer.appendChild(movieItem);
+            }
+          });
+        } else {
+          movieContainer.innerHTML = "<p>No movies found.</p>";
+        }
+      });
+    }
+
+    window.onload = () => {
+      fetchMovies();
+
+      const searchBox = document.querySelector(".search-box");
+      searchBox.addEventListener("input", (e) => {
+        const query = e.target.value;
+        fetchMovies(query);
+      });
+    };
+  </script>
+</head>
+
+<body>
+  <div class="search-container">
+    <input type="text" class="search-box" placeholder="Search movies...">
+  </div>
+  <div id="movie-container" class="movie-container">Loading movies...</div>
+</body>
+</html>

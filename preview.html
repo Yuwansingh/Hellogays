@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Video Player</title>
+  <style>
+    body {
+      background-color: #121212;
+      color: white;
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    iframe {
+      width: 100vw;
+      height: 100vh;
+      border: none;
+    }
+  </style>
+</head>
+
+<body>
+  <iframe id="video-frame" allowfullscreen></iframe>
+
+  <script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const videoUrl = urlParams.get("url");
+
+    if (videoUrl) {
+      document.getElementById("video-frame").src = videoUrl.replace("/view", "/preview");
+    } else {
+      document.body.innerHTML = "<h1>Invalid Video URL</h1>";
+    }
+
+    // Handle back button press
+    document.addEventListener("keydown", function (event) {
+      if (event.key === "Backspace" || event.key === "Escape") {
+        event.preventDefault();
+        history.back();
+      }
+    });
+
+    // For mobile device back button handling
+    window.onpopstate = function () {
+      history.back();
+    };
+  </script>
+</body>
+</html>
