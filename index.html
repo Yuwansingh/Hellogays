@@ -1,187 +1,1240 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Movie Search</title>
-  <style>
-    /* Dark Theme Setup */
-    body {
-      background-color: #121212;
-      color: #ffffff;
-      font-family: 'Arial', sans-serif;
-      margin: 0;
-      padding: 0;
-      text-align: center;
-    }
-
-    /* Search Bar Styling */
-    .search-container {
-      background-color: #1b1b1b;
-      padding: 5px;
-      text-align: center;
-    }
-
-    .search-box {
-      width: 94%;
-      max-width: 600px;
-      height: 30px;
-      padding: 10px;
-      border: none;
-      border-radius: 10px;
-      outline: none;
-      background-color: #2b2b2b;
-      color: #ffffff;
-      font-size: 18px;
-    }
-
-    /* Placeholder loading effects */
-    .placeholder-container {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-      gap: 5px;
-      padding: 10px;
-      justify-items: center;
-    }
-
-    .placeholder-item {
-      width: 90px;
-      background-color: #2b2b2b;
-      border-radius: 12px;
-      height: 150px;
-      animation: shimmer 1.5s infinite linear;
-      background: linear-gradient(
-        90deg,
-        #2b2b2b 25%,
-        #444 50%,
-        #2b2b2b 75%
-      );
-      background-size: 200% 100%;
-    }
-
-    @keyframes shimmer {
-      100% {
-        background-position: -200% 0;
-      }
-    }
-
-    /* Movie Container */
-    .movie-container {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-      gap: 5px;
-      padding: 10px;
-      justify-items: center;
-    }
-
-    .movie-item {
-      width: 90px;
-      background-color: #1e1e1e;
-      border-radius: 12px;
-      padding: 10px;
-      cursor: pointer;
-      transition: transform 0.3s, background-color 0.3s;
-      text-align: center;
-    }
-
-    .movie-item:hover {
-      transform: scale(1.05);
-      background-color: #ff9800;
-    }
-
-    .movie-item img {
-      width: 100%;
-      border-radius: 8px;
-    }
-
-    .movie-item h3 {
-      font-size: 18px;
-      color: #ffffff;
-      margin-top: 10px;
-    }
-  </style>
-
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
-    import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
-
-    const firebaseConfig = {
-      apiKey: "AIzaSyCoa3R14n3PU8dG93NvR57eN65Jx_vQHm0",
-      authDomain: "movieappst.firebaseapp.com",
-      databaseURL: "https://movieappst-default-rtdb.firebaseio.com",
-      projectId: "movieappst",
-      storageBucket: "movieappst.firebasestorage.app",
-      appId: "1:918391465887:android:4e56bdd1881f9c51d8bfaa"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const db = getDatabase(app);
-
-    function fetchMovies(query = "") {
-      const movieRef = ref(db, "movies");
-      const movieContainer = document.getElementById("movie-container");
-      const placeholderContainer = document.getElementById("placeholder-container");
-
-      // Show placeholder until data is fetched
-      placeholderContainer.style.display = "grid";
-      movieContainer.style.display = "none";
-
-      onValue(movieRef, (snapshot) => {
-        const data = snapshot.val();
-        movieContainer.innerHTML = "";
-        placeholderContainer.style.display = "none";
-        movieContainer.style.display = "grid";
-
-        if (data) {
-          Object.keys(data).forEach((key) => {
-            const movieData = data[key];
-            if (movieData.title.toLowerCase().includes(query.toLowerCase())) {
-              const movieItem = document.createElement("div");
-              movieItem.classList.add("movie-item");
-
-              movieItem.innerHTML = `
-                <img src="${movieData.thumbnail}" alt="${movieData.title}" loading="lazy">
-                <h3>${movieData.title}</h3>
-              `;
-
-              movieItem.addEventListener("click", () => {
-                window.location.href = `preview.html?url=${encodeURIComponent(movieData.url)}`;
-              });
-
-              movieContainer.appendChild(movieItem);
-            }
-          });
-        } else {
-          movieContainer.innerHTML = "<p>No movies found.</p>";
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Free Fire Map Upload</title>
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* YouTube-style Loading Animation */
+        .video-loading-animation {
+            width: 100%;
+            margin-bottom: 20px;
+            display: none; /* Initially hidden */
         }
-      });
-    }
 
-    window.onload = () => {
-      fetchMovies();
+        .thumbnail-placeholder {
+            width: 100%;
+            height: 180px;
+            background: #e0e0e0;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
 
-      const searchBox = document.querySelector(".search-box");
-      searchBox.addEventListener("input", (e) => {
-        const query = e.target.value;
-        fetchMovies(query);
-      });
-    };
-  </script>
+        .title-placeholder {
+            width: 80%;
+            height: 20px;
+            background: #e0e0e0;
+            border-radius: 4px;
+            margin-bottom: 8px;
+        }
+
+        .uploader-placeholder {
+            width: 60%;
+            height: 15px;
+            background: #e0e0e0;
+            border-radius: 4px;
+        }
+
+        /* Pulse Animation (Shimmer) */
+        .pulse {
+            animation: pulse 1.5s infinite ease-in-out;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 0.6; }
+            50% { opacity: 0.3; }
+            100% { opacity: 0.6; }
+        }
+
+        .dark-theme .thumbnail-placeholder,
+        .dark-theme .title-placeholder,
+        .dark-theme .uploader-placeholder {
+            background: #333 !important;
+        }
+
+        /* Basic Styling */
+        * {
+            box-sizing: border-box;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: #f4f4f9;
+            color: #333;
+            min-height: 100vh;
+            padding-bottom: 60px;
+        }
+        
+        /* Dark Theme Styles */
+        body.dark-theme {
+            background-color: #121212;
+            color: #e0e0e0;
+        }
+        
+        .dark-theme #homePage,
+        .dark-theme #uploadForm,
+        .dark-theme #profilePage,
+        .dark-theme .modal-content {
+            background-color: #1e1e1e;
+            color: #e0e0e0;
+        }
+        
+        .dark-theme .map-card {
+            background-color: #2d2d2d;
+            border-color: #444;
+        }
+        
+        .dark-theme .map-card h3 {
+            color: #e0e0e0;
+        }
+        
+        .dark-theme .uploader-info span {
+            color: #aaa;
+        }
+        
+        .dark-theme input,
+        .dark-theme textarea {
+            background-color: #333;
+            color: #fff;
+            border-color: #444;
+        }
+        
+        .dark-theme nav {
+            background-color: #1a1a1a;
+        }
+        
+        h2 {
+            margin: 20px 0;
+            color: #333;
+            text-align: center;
+        }
+        
+        .dark-theme h2 {
+            color: #e0e0e0;
+        }
+        
+        /* Login Button */
+        #loginBtn {
+            background-color: #4285F4;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+        }
+        
+        #loginBtn:hover {
+            background-color: #357ABD;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+        
+        /* Navigation Bar */
+        nav {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            background: #333;
+            display: flex;
+            justify-content: space-around;
+            padding: 12px 0;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.2);
+            z-index: 100;
+        }
+        
+        nav button {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+            padding: 5px 10px;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+        
+        nav button:hover {
+            color: #4285F4;
+            background: rgba(255,255,255,0.1);
+        }
+        
+        nav button i {
+            font-size: 20px;
+        }
+        
+        /* Pages */
+        #uploadForm, #profilePage, #homePage {
+            display: none;
+            width: 90%;
+            max-width: 600px;
+            margin: 20px auto;
+        }
+        
+        /* Loader */
+        .loader {
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #3498db;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* Search Bar */
+        #searchBar {
+            width: 100%;
+            padding: 12px 15px;
+            margin: 20px 0;
+            font-size: 16px;
+            border: 1px solid #ddd;
+            border-radius: 30px;
+            outline: none;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        #searchBar:focus {
+            border-color: #4285F4;
+        }
+        
+        .dark-theme #searchBar {
+            background-color: #333;
+            color: #fff;
+            border-color: #444;
+        }
+        
+        /* Map Card */
+        .map-card {
+            border: 1px solid #ddd;
+            padding: 15px;
+            margin: 15px 0;
+            width: 100%;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .map-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .map-card img {
+            width: 100%;
+            height: auto;
+            max-height: 300px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+        
+        .map-card h3 {
+            margin: 0 0 10px 0;
+            color: #333;
+        }
+        
+        .uploader-info {
+            display: flex;
+            align-items: center;
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid #eee;
+        }
+        
+        .uploader-info img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-right: 10px;
+            object-fit: cover;
+        }
+        
+        .uploader-info span {
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .uploader-info:hover span {
+            color: #4285F4;
+            text-decoration: underline;
+        }
+        
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        
+        .modal-content {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+        }
+        
+        .dark-theme .modal-content {
+            background-color: #1e1e1e;
+            color: #e0e0e0;
+        }
+        
+        .modal-content img {
+            width: 100%;
+            max-width: 100%;
+            border-radius: 8px;
+            margin: 10px 0;
+        }
+        
+        .close-modal {
+            cursor: pointer;
+            color: #ff4444;
+            font-size: 24px;
+            position: absolute;
+            top: 10px;
+            right: 15px;
+        }
+        
+        .modal-uploader {
+            display: flex;
+            align-items: center;
+            margin: 15px 0;
+            padding: 10px;
+            background: #f9f9f9;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+        
+        .dark-theme .modal-uploader {
+            background-color: #2d2d2d;
+        }
+        
+        .modal-uploader:hover {
+            background: #f0f0f0;
+        }
+        
+        .dark-theme .modal-uploader:hover {
+            background-color: #333;
+        }
+        
+        .modal-uploader img {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            margin-right: 15px;
+            object-fit: cover;
+        }
+        
+        .modal-uploader-info h4 {
+            margin: 0;
+            color: #333;
+        }
+        
+        .dark-theme .modal-uploader-info h4 {
+            color: #e0e0e0;
+        }
+        
+        .modal-uploader-info p {
+            margin: 5px 0 0 0;
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .dark-theme .modal-uploader-info p {
+            color: #aaa;
+        }
+        
+        /* Delete Button */
+        .delete-btn {
+            background-color: #ff4444;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            margin-top: 15px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+        
+        .delete-btn:hover {
+            background-color: #cc0000;
+        }
+        
+        /* Form Styling */
+        #uploadForm label {
+            display: block;
+            margin: 15px 0 5px;
+            font-weight: bold;
+            color: #444;
+        }
+        
+        .dark-theme #uploadForm label {
+            color: #e0e0e0;
+        }
+        
+        #uploadForm input, #uploadForm textarea {
+            width: 100%;
+            padding: 12px 15px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+            outline: none;
+            transition: border 0.3s ease;
+        }
+        
+        #uploadForm input:focus, #uploadForm textarea:focus {
+            border-color: #4285F4;
+        }
+        
+        #uploadForm textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+        
+        #uploadForm button {
+            background-color: #4285F4;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 5px;
+            width: 100%;
+            transition: all 0.3s ease;
+        }
+        
+        #uploadForm button:hover {
+            background-color: #357ABD;
+        }
+        
+        /* Profile Page Styling */
+        #profilePage {
+            text-align: center;
+        }
+        
+        .profile-header {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .profile-header img {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            margin-bottom: 15px;
+            object-fit: cover;
+            border: 3px solid #4285F4;
+        }
+        
+        .profile-header h2 {
+            margin: 0;
+            color: #333;
+        }
+        
+        .dark-theme .profile-header h2 {
+            color: #e0e0e0;
+        }
+        
+        .profile-header p {
+            margin: 5px 0 0 0;
+            color: #666;
+        }
+        
+        .dark-theme .profile-header p {
+            color: #aaa;
+        }
+        
+        #profilePage button {
+            background-color: #4285F4;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 5px;
+            margin: 20px 0;
+            transition: all 0.3s ease;
+        }
+        
+        #profilePage button:hover {
+            background-color: #357ABD;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 30px;
+            color: #666;
+        }
+        
+        .dark-theme .empty-state {
+            color: #aaa;
+        }
+        
+        .empty-state i {
+            font-size: 50px;
+            color: #ddd;
+            margin-bottom: 15px;
+        }
+        
+        /* Side Menu Styles */
+        .side-menu {
+            position: fixed;
+            top: 0;
+            left: -300px;
+            width: 280px;
+            height: 100vh;
+            background-color: #2c3e50;
+            color: white;
+            z-index: 1000;
+            transition: all 0.3s ease;
+            overflow-y: auto;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.2);
+        }
+        
+        .dark-theme .side-menu {
+            background-color: #1a252f;
+        }
+        
+        .side-menu.open {
+            left: 0;
+        }
+        
+        .menu-header {
+            padding: 15px;
+            background-color: #1a252f;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .dark-theme .menu-header {
+            background-color: #121a21;
+        }
+        
+        .close-menu {
+            font-size: 24px;
+            cursor: pointer;
+        }
+        
+        .menu-section {
+            padding: 15px;
+            border-bottom: 1px solid #34495e;
+        }
+        
+        .dark-theme .menu-section {
+            border-bottom-color: #2c3e50;
+        }
+        
+        .menu-section h4 {
+            margin-top: 0;
+            color: #3498db;
+        }
+        
+        .storage-info {
+            margin-bottom: 10px;
+        }
+        
+        .storage-info span {
+            display: block;
+            font-size: 14px;
+            margin: 5px 0;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 10px;
+            background-color: #34495e;
+            border-radius: 5px;
+            overflow: hidden;
+            margin: 5px 0;
+        }
+        
+        .dark-theme .progress-bar {
+            background-color: #2c3e50;
+        }
+        
+        .progress {
+            height: 100%;
+            background-color: #3498db;
+        }
+        
+        .tools-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .tools-list li {
+            padding: 8px 0;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+        }
+        
+        .tools-list li:hover {
+            color: #3498db;
+        }
+        
+        .tools-list i {
+            margin-right: 10px;
+            width: 20px;
+            text-align: center;
+        }
+        
+        .menu-toggle {
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            background-color: #2c3e50;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            z-index: 999;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            display: none; /* Hidden by default */
+        }
+        
+        .dark-theme .menu-toggle {
+            background-color: #1a252f;
+        }
+        
+        @media (max-width: 768px) {
+            .side-menu {
+                width: 250px;
+            }
+        }
+    </style>
 </head>
-
 <body>
-  <div class="search-container">
-    <input type="text" class="search-box" placeholder="Search movies...">
-  </div>
+    <!-- YouTube Loading Animation -->
+    <div id="videoLoading" class="video-loading-animation">
+        <div class="thumbnail-placeholder pulse"></div>
+        <div class="title-placeholder pulse"></div>
+        <div class="uploader-placeholder pulse"></div>
+    </div>
 
-  <!-- Placeholder content -->
-  <div id="placeholder-container" class="placeholder-container">
-    <div class="placeholder-item"></div>
-    <div class="placeholder-item"></div>
-    <div class="placeholder-item"></div>
-    <div class="placeholder-item"></div>
-  </div>
+    <!-- Side Menu -->
+    <div id="sideMenu" class="side-menu">
+        <div class="menu-header">
+            <h3>Storage Info</h3>
+            <span class="close-menu" onclick="toggleMenu()">&times;</span>
+        </div>
+        
+        <div class="menu-section">
+            <h4>More Information</h4>
+            <div class="storage-info">
+                
+            </div>
+        </div>
+        
+        
+        
+        <div class="menu-section">
+            <h4>Tools</h4>
+            <ul class="tools-list">
+                <li onclick="openInstagram()">
+                    <i class="fab fa-instagram"></i> Instagram
+                </li>
+                <li onclick="toggleDarkMode()">
+                    <i class="fas fa-moon"></i> Dark Theme
+                </li>
+            </ul>
+        </div>
+    </div>
 
-  <div id="movie-container" class="movie-container">Loading movies...</div>
+    <!-- Menu Toggle Button -->
+    <div class="menu-toggle" onclick="toggleMenu()">
+        <i class="fas fa-bars"></i>
+    </div>
+
+    <h2>Free Fire craftaland Map</h2>
+    <button id="loginBtn" onclick="login()">
+        <i class="fab fa-google"></i> Login with Google
+    </button>
+
+    <!-- Navigation -->
+    <nav id="nav" style="display: none;">
+        <button onclick="showHome()"><i class="fas fa-home"></i><span>Home</span></button>
+        <button onclick="showUploadForm()"><i class="fas fa-plus"></i><span>Upload</span></button>
+        <button onclick="showProfile()"><i class="fas fa-user"></i><span>Profiles</span></button>
+    </nav>
+
+    <!-- Home Page -->
+    <div id="homePage"></div>
+
+    <!-- Upload Form -->
+    <form id="uploadForm">
+        <label>Title:</label>
+        <input type="text" id="title" required placeholder="Enter map title">
+        
+        <label>Description:</label>
+        <textarea id="description" required placeholder="Enter map description"></textarea>
+        
+        <label>YouTube URL:</label>
+        <input type="url" id="youtubeUrl" required placeholder="Enter YouTube video URL">
+        
+        <label>Map Code:</label>
+        <input type="text" id="mapCode" required placeholder="Enter map code">
+        
+        <label>Thumbnail (Image):</label>
+        <input type="file" id="thumbnail" accept="image/*" required>
+        
+        <button type="button" onclick="uploadData()">Upload Map</button>
+        <div id="loader" class="loader" style="display: none;"></div>
+    </form>
+
+    <!-- Profile Page -->
+    <div id="profilePage"></div>
+
+    <!-- Modal for Map Details -->
+    <div id="modal" class="modal">
+        <div id="modalContent" class="modal-content"></div>
+    </div>
+
+    <script type="module">
+        // Firebase SDKs Import
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-app.js";
+        import { getAuth, GoogleAuthProvider, signInWithPopup, signOut } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-auth.js";
+        import { getDatabase, ref, set, push, onValue, remove } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-database.js";
+
+        // Firebase Config
+        const firebaseConfig = {
+            apiKey: "AIzaSyCbmTkXIUXHZh8649u0xW78x_eOuBHIA_o",
+            authDomain: "free-fire-craftaland.firebaseapp.com",
+            databaseURL: "https://free-fire-craftaland-default-rtdb.firebaseio.com",
+            projectId: "free-fire-craftaland",
+            storageBucket: "free-fire-craftaland.appspot.com",
+            messagingSenderId: "358816944398",
+            appId: "1:358816944398:web:6693cf3111f3a5a605475f",
+            measurementId: "G-N2M3EFRREL"
+        };
+
+        // Firebase Initialize
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const provider = new GoogleAuthProvider();
+        const db = getDatabase();
+
+        // Global Variables
+        let currentUser = null;
+        let allMapsData = {};
+
+        // Google Login Function
+        window.login = function() {
+            signInWithPopup(auth, provider).then((result) => {
+                currentUser = result.user;
+                showUI();
+            }).catch((error) => {
+                console.error("Login Error: ", error);
+                alert("Login failed. Please try again.");
+            });
+        };
+
+        // Google Logout Function
+        window.logout = function() {
+            signOut(auth).then(() => {
+                currentUser = null;
+                hideUI();
+            }).catch((error) => {
+                console.error("Logout Error: ", error);
+                alert("Logout failed. Please try again.");
+            });
+        };
+
+        // Show UI After Login
+        function showUI() {
+            document.getElementById("loginBtn").style.display = "none";
+            document.getElementById("nav").style.display = "flex";
+            document.getElementById("homePage").style.display = "block";
+            document.querySelector(".menu-toggle").style.display = "flex";
+            loadHomePage();
+            checkTheme();
+        }
+
+        // Hide UI After Logout
+        function hideUI() {
+            document.getElementById("loginBtn").style.display = "block";
+            document.getElementById("nav").style.display = "none";
+            document.getElementById("homePage").style.display = "none";
+            document.getElementById("uploadForm").style.display = "none";
+            document.getElementById("profilePage").style.display = "none";
+            document.querySelector(".menu-toggle").style.display = "none";
+            document.getElementById("sideMenu").classList.remove("open");
+        }
+
+        // Load Home Page with Maps
+        function loadHomePage() {
+            // Show loading animation
+            document.getElementById("videoLoading").style.display = "block";
+            
+            const uploadsRef = ref(db, "uploads");
+            onValue(uploadsRef, (snapshot) => {
+                // Hide loading animation when data loads
+                document.getElementById("videoLoading").style.display = "none";
+                
+                const data = snapshot.val();
+                allMapsData = data || {};
+                let mapsHTML = "";
+                
+                if (data) {
+                    for (let key in data) {
+                        mapsHTML += `
+                            <div class="map-card" onclick="showMapDetails('${key}')">
+                                <h3>${data[key].title}</h3>
+                                <img src="${data[key].thumbnail}" alt="${data[key].title}">
+                                <div class="uploader-info" onclick="viewUserProfile('${data[key].userId}', event)">
+                                    <img src="${data[key].userPhoto || 'https://via.placeholder.com/40'}" alt="Uploader">
+                                    <span>Uploaded by ${data[key].username}</span>
+                                </div>
+                            </div>
+                        `;
+                    }
+                } else {
+                    mapsHTML = `
+                        <div class="empty-state">
+                            <i class="fas fa-map"></i>
+                            <h3>No Maps Found</h3>
+                            <p>Be the first to upload a map!</p>
+                        </div>
+                    `;
+                }
+                
+                document.getElementById("homePage").innerHTML = `
+                    <input type="text" id="searchBar" placeholder="Search maps..." oninput="searchMaps()">
+                    ${mapsHTML}
+                `;
+            });
+        }
+
+        // Search Maps
+        window.searchMaps = function() {
+            const searchTerm = document.getElementById("searchBar").value.toLowerCase();
+            const mapCards = document.querySelectorAll(".map-card");
+            mapCards.forEach(card => {
+                const title = card.querySelector("h3").innerText.toLowerCase();
+                if (title.includes(searchTerm)) {
+                    card.style.display = "block";
+                } else {
+                    card.style.display = "none";
+                }
+            });
+        };
+
+        // Show Map Details Modal
+        window.showMapDetails = function(mapId) {
+            const map = allMapsData[mapId];
+            if (!map) return;
+            
+            let deleteButton = '';
+            if (currentUser && currentUser.uid === map.userId) {
+                deleteButton = `
+                    <button class="delete-btn" onclick="deleteMap('${mapId}')">
+                        <i class="fas fa-trash"></i> Delete Map
+                    </button>
+                `;
+            }
+            
+            document.getElementById("modalContent").innerHTML = `
+                <span class="close-modal" onclick="closeModal()">&times;</span>
+                <h2>${map.title}</h2>
+                <img src="${map.thumbnail}" alt="${map.title}">
+                
+                <div class="modal-uploader" onclick="viewUserProfile('${map.userId}', event)">
+                    <img src="${map.userPhoto || 'https://via.placeholder.com/50'}" alt="Uploader">
+                    <div class="modal-uploader-info">
+                        <h4>${map.username}</h4>
+                        <p>Uploaded this map</p>
+                    </div>
+                </div>
+                
+                <p><strong>YouTube URL:</strong> <a href="${map.youtubeUrl}" target="_blank">${map.youtubeUrl}</a></p>
+                <p><strong>Map Code:</strong> ${map.mapCode}</p>
+                <p><strong>Description:</strong> ${map.description}</p>
+                
+                ${deleteButton}
+            `;
+            document.getElementById("modal").style.display = "flex";
+        };
+
+        // Delete Map Function
+        window.deleteMap = function(mapId) {
+            if (!currentUser) {
+                alert("You need to be logged in to delete maps!");
+                return;
+            }
+            
+            const map = allMapsData[mapId];
+            if (!map || map.userId !== currentUser.uid) {
+                alert("You can only delete your own maps!");
+                return;
+            }
+            
+            if (confirm("Are you sure you want to delete this map? This action cannot be undone.")) {
+                const mapRef = ref(db, `uploads/${mapId}`);
+                remove(mapRef).then(() => {
+                    alert("Map deleted successfully!");
+                    closeModal();
+                    loadHomePage();
+                    if (document.getElementById("profilePage").style.display === "block") {
+                        loadProfilePage();
+                    }
+                }).catch(error => {
+                    console.error("Delete Error:", error);
+                    alert("Failed to delete map. Please try again.");
+                });
+            }
+        };
+
+        // View User Profile
+        window.viewUserProfile = function(userId, event) {
+            event.stopPropagation(); // Prevent triggering parent click events
+            showProfile();
+            loadUserProfile(userId);
+        };
+
+        // Close Modal
+        window.closeModal = function() {
+            document.getElementById("modal").style.display = "none";
+        };
+
+        // Navigation Functions
+        window.showHome = function() {
+            document.getElementById("homePage").style.display = "block";
+            document.getElementById("uploadForm").style.display = "none";
+            document.getElementById("profilePage").style.display = "none";
+            loadHomePage();
+        };
+
+        window.showUploadForm = function() {
+            document.getElementById("homePage").style.display = "none";
+            document.getElementById("uploadForm").style.display = "block";
+            document.getElementById("profilePage").style.display = "none";
+        };
+
+        window.showProfile = function(userId) {
+            document.getElementById("homePage").style.display = "none";
+            document.getElementById("uploadForm").style.display = "none";
+            document.getElementById("profilePage").style.display = "block";
+            
+            if (userId) {
+                loadUserProfile(userId);
+            } else {
+                loadProfilePage();
+            }
+        };
+
+        // Load Current User's Profile Page
+        function loadProfilePage() {
+            if (!currentUser) return;
+
+            const user = currentUser;
+            const uploadsRef = ref(db, "uploads");
+            onValue(uploadsRef, (snapshot) => {
+                const data = snapshot.val();
+                let userMapsHTML = "";
+                let mapCount = 0;
+                
+                if (data) {
+                    for (let key in data) {
+                        if (data[key].userId === user.uid) {
+                            userMapsHTML += `
+                                <div class="map-card" onclick="showMapDetails('${key}')">
+                                    <h3>${data[key].title}</h3>
+                                    <img src="${data[key].thumbnail}" alt="${data[key].title}">
+                                </div>
+                            `;
+                            mapCount++;
+                        }
+                    }
+                }
+                
+                if (mapCount === 0) {
+                    userMapsHTML = `
+                        <div class="empty-state">
+                            <i class="fas fa-map"></i>
+                            <h3>No Maps Uploaded</h3>
+                            <p>Click the plus button to upload your first map!</p>
+                        </div>
+                    `;
+                }
+                
+                document.getElementById("profilePage").innerHTML = `
+                    <div class="profile-header">
+                        <img src="${user.photoURL || 'https://via.placeholder.com/100'}" alt="Profile Photo">
+                        <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 10px;">
+                            <h2 style="margin: 0;">${user.displayName}</h2>
+                            <button onclick="logout()" style="margin: 0; padding: 8px 16px; font-size: 14px;">Logout</button>
+                        </div>
+                        <p>${user.email}</p>
+                        <p>${mapCount} maps uploaded</p>
+                    </div>
+                    ${userMapsHTML}
+                `;
+            });
+        }
+
+        // Load Other User's Profile
+        function loadUserProfile(userId) {
+            const uploadsRef = ref(db, "uploads");
+            onValue(uploadsRef, (snapshot) => {
+                const data = snapshot.val();
+                let userMapsHTML = "";
+                let userInfo = null;
+                let mapCount = 0;
+                
+                if (data) {
+                    for (let key in data) {
+                        if (data[key].userId === userId) {
+                            if (!userInfo) {
+                                userInfo = {
+                                    name: data[key].username,
+                                    photo: data[key].userPhoto
+                                };
+                            }
+                            userMapsHTML += `
+                                <div class="map-card" onclick="showMapDetails('${key}')">
+                                    <h3>${data[key].title}</h3>
+                                    <img src="${data[key].thumbnail}" alt="${data[key].title}">
+                                </div>
+                            `;
+                            mapCount++;
+                        }
+                    }
+                }
+                
+                if (!userInfo) {
+                    // If no maps found but we're viewing a profile, show empty state
+                    userMapsHTML = `
+                        <div class="empty-state">
+                            <i class="fas fa-map"></i>
+                            <h3>No Maps Found</h3>
+                            <p>This user hasn't uploaded any maps yet.</p>
+                        </div>
+                    `;
+                }
+                
+                document.getElementById("profilePage").innerHTML = `
+                    <div class="profile-header">
+                        <img src="${userInfo?.photo || 'https://via.placeholder.com/100'}" alt="Profile Photo">
+                        <h2>${userInfo?.name || 'Unknown User'}</h2>
+                        <p>${mapCount} maps uploaded</p>
+                    </div>
+                    ${userMapsHTML}
+                    <button onclick="showHome()">Back to Home</button>
+                `;
+            });
+        }
+
+        // Upload Data Function
+        window.uploadData = function() {
+            const title = document.getElementById("title").value;
+            const description = document.getElementById("description").value;
+            const youtubeUrl = document.getElementById("youtubeUrl").value;
+            const mapCode = document.getElementById("mapCode").value;
+            const file = document.getElementById("thumbnail").files[0];
+            const uploadButton = document.querySelector("#uploadForm button[type='button']");
+
+            if (!title || !description || !youtubeUrl || !mapCode || !file) {
+                alert("Please fill all fields and select an image.");
+                return;
+            }
+
+            // Disable Upload Button
+            uploadButton.disabled = true;
+            uploadButton.textContent = "Uploading...";
+
+            // Show Loader
+            document.getElementById("loader").style.display = "block";
+
+            // Resize Image to 1280x720 (Crop to Fit)
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                const img = new Image();
+                img.src = event.target.result;
+                img.onload = () => {
+                    const canvas = document.createElement("canvas");
+                    canvas.width = 1280;
+                    canvas.height = 720;
+                    const ctx = canvas.getContext("2d");
+
+                    // Calculate Aspect Ratio
+                    const imgAspectRatio = img.width / img.height;
+                    const targetAspectRatio = 1280 / 720;
+
+                    let sourceX = 0, sourceY = 0, sourceWidth = img.width, sourceHeight = img.height;
+
+                    // Crop Image to Fit 16:9 Aspect Ratio
+                    if (imgAspectRatio > targetAspectRatio) {
+                        sourceWidth = img.height * targetAspectRatio;
+                        sourceX = (img.width - sourceWidth) / 2;
+                    } else {
+                        sourceHeight = img.width / targetAspectRatio;
+                        sourceY = (img.height - sourceHeight) / 2;
+                    }
+
+                    // Draw Cropped Image on Canvas
+                    ctx.drawImage(img, sourceX, sourceY, sourceWidth, sourceHeight, 0, 0, 1280, 720);
+
+                    // Convert Canvas to Data URL
+                    const dataUrl = canvas.toDataURL("image/jpeg", 0.9);
+
+                    // Upload Data URL to ImgBB
+                    fetch("https://api.imgbb.com/1/upload", {
+                        method: "POST",
+                        body: new URLSearchParams({
+                            key: "ac36a174ebd65fec02ea7f14ed716a20",
+                            image: dataUrl.split(",")[1]
+                        })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            const imageUrl = data.data.url;
+                            saveToFirebase(title, description, youtubeUrl, mapCode, imageUrl);
+                        } else {
+                            alert("Image Upload Failed!");
+                        }
+                    })
+                    .catch(error => console.error("Image Upload Error:", error))
+                    .finally(() => {
+                        // Hide Loader
+                        document.getElementById("loader").style.display = "none";
+
+                        // Enable Upload Button
+                        uploadButton.disabled = false;
+                        uploadButton.textContent = "Upload";
+                    });
+                };
+            };
+            reader.readAsDataURL(file);
+        };
+
+        // Save Data to Firebase
+        function saveToFirebase(title, description, youtubeUrl, mapCode, imageUrl) {
+            if (!currentUser) {
+                alert("You need to login first!");
+                return;
+            }
+
+            const uploadRef = push(ref(db, "uploads"));
+            set(uploadRef, {
+                title: title,
+                description: description,
+                youtubeUrl: youtubeUrl,
+                mapCode: mapCode,
+                thumbnail: imageUrl,
+                userId: currentUser.uid,
+                username: currentUser.displayName,
+                userPhoto: currentUser.photoURL,
+                timestamp: Date.now()
+            }).then(() => {
+                alert("Map uploaded successfully!");
+                document.getElementById("uploadForm").reset();
+                showHome();
+            }).catch(error => console.error("Database Error:", error));
+        }
+
+        // Open Instagram
+        window.openInstagram = function() {
+            // Replace with your actual Instagram URL or profile
+            window.open("https://www.instagram.com/tagergamerz_?igsh=MW5yMjE4MHpvdnI3dA==/", "_blank");
+        };
+
+        // Toggle Dark Mode
+        window.toggleDarkMode = function() {
+            document.body.classList.toggle("dark-theme");
+            
+            // Save preference to localStorage
+            const isDark = document.body.classList.contains("dark-theme");
+            localStorage.setItem("darkMode", isDark);
+            
+            // Update icon
+            const icon = document.querySelector(".tools-list li:nth-child(3) i");
+            if (isDark) {
+                icon.classList.remove("fa-moon");
+                icon.classList.add("fa-sun");
+            } else {
+                icon.classList.remove("fa-sun");
+                icon.classList.add("fa-moon");
+            }
+        };
+
+        // Check for saved theme preference on load
+        function checkTheme() {
+            const darkMode = localStorage.getItem("darkMode") === "true";
+            if (darkMode) {
+                document.body.classList.add("dark-theme");
+                const icon = document.querySelector(".tools-list li:nth-child(3) i");
+                if (icon) {
+                    icon.classList.remove("fa-moon");
+                    icon.classList.add("fa-sun");
+                }
+            }
+        }
+
+        // Toggle Side Menu
+        window.toggleMenu = function() {
+            document.getElementById("sideMenu").classList.toggle("open");
+        };
+
+        // Initialize auth state listener
+        auth.onAuthStateChanged((user) => {
+            if (user) {
+                currentUser = user;
+                showUI();
+            } else {
+                currentUser = null;
+                hideUI();
+            }
+        });
+    </script>
 </body>
 </html>
