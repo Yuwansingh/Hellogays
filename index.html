@@ -315,7 +315,7 @@
 
 <header>
   <div class="logo">
-    <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj48cGF0aCBkPSJNMjU2IDhDMTE5IDggOCAxMTkgOCAyNTZzMTExIDI0OCAyNDggMjQ4IDI0OC0xMTEgMjQ4LTI0OFMzOTMgOCAyNTYgOHptMCA0NDhjLTExMC41IDAtMjAwLTg5LjUtMjAwLTIwMFMxNDUuNSA1NiAyNTYgNTZzMjAwIDg5LjUgMjAwIDIwMC04OS41IDIwMC0yMDAgMjAwem02MS44LTEwNC40bC04NC45LTYxLjdjLTMuMS0yLjMtNC45LTUuOS00LjktOS43TDExNiAyNTZjMCA2LjYgNS40IDEyIDEyIDEyaDMyYzYuNiAwIDEyLTUuNCAxMi0xMnYtMjhsNjYuNSA0OC4yYzUgMy42IDEyLjEgMy42IDE3LjEgMGwyNjAu4LTE4OC44Yy40LS4zLjctLjYuNy0xLjF2LTk2LjJjMC02LjYtNS40LTEyLTEyLTEyaC0zMmMtNi42IDAtMTIgNS40LTEyIDEydjI4TDI3Ny41IDMwMy44Yy01IDQtMTIuMSA0LTE3LjEgMGwtODQuOS02MS43Yy0zLjEtMi4zLTcuMi0yLjMtMTAuMy0uMS0zLjEgMi4yLTQuOSA1LjktNC45IDkuOWwtLjIgMTYxYzAgNi42IDUuNCAxMiAxMiAxMmgzMmM2LjYgMCAxMi01LjQgMTItMTJsLjItMTM5LjkgNjYuNSA0OC4yYzUgMy42IDEyLjEgMy42IDE3LjEgMGwyNjAuOC0xODguOGM0LjktMy42IDcuOC05LjcgNy44LTE2LjFWMTU0YzAtNi42LTUuNC0xMi0xMi0xMmgtMzJjLTYuNiAwLTEyIDUuNC0xMiAxMnY4OC4yTDMxNC41IDIwOC4yYy01IDQtMTIuMSA0LTE3LjEgMHoiIGZpbGw9IndoaXRlIi8+PC9zdmc+" alt="Coin">
+    <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj48cGF0aCBkPSJNMjU2IDhDMTE5IDggOCAxMTkgOCAyNTZzMTExIDI0OCAyNDggMjQ4IDI0OC0xMTEgMjQ4LTI0OFMzOTMgOCAyNTYgOHptMCA0NDhjLTExMC41IDAtMjAwLTg5LjUtMjAwLTIwMFMxNDUuNSA1NiAyNTYgNTZzMjAwIDg5LjUgMjAwIDIwMC04OS41IDIwMC0yMDAgMjAwem02MS44LTEwNC40bC04NC45LTYxLjdjLTMuMS0yLjMtNC45LTUuOS00LjktOS43TDExNiAyNTZjMCA2LjYgNS40IDEyIDEyIDEyaDMyYzYuNiAwIDEyLTUuNCAxMi0xMnYtMjhsNjYuNSA0OC4yYzUgMy42IDEyLjEgMy42IDE3LjEgMGwyNjAu4LTE4OC44Yy40LS4zLjctLjYuNy0xLjF2LTk2LjJjMC02LjYtNS40LTEyLTEyLTEyaC0zMmMtNi42IDAtMTIgNS40LTEyIDEydjI4TDI3Ny41IDMwMy44Yy01IDQtMTIuMSA0LTE3LjEgMGwtODQuOS02MS43Yy0zLjEtMi4zLTcuMi0yLjMtMTAuMy0uMS0zLjEgMi4yLTQuOSA1LjktNC45IDkuOWwtLjIgMTYxYzAgNi42IDUuNCAxMiAxMiAxMmgzMmM2LjYgMCAxMi01LjQgMTItMTJsLjItMTM5LjkgNjYuNSA0OC4yYzUgMy42IDEyLjEgMy42IDE3LjEgMGwyNjAuOC0xODguOGM0LjktMy42IDcuOC05LjcgNy44LTE2LjFWMTU0YzAtNi42LTUuNC0xMi0xMi0xMmgtMzJjLTYuNiAwLTEyIDUuNC0xMiAxMnY4OC4yLTMxNC41IDIwOC4yYy01IDQtMTIuMSA0LTE3LjEgMHoiIGZpbGw9IndoaXRlIi8+PC9zdmc+" alt="Coin">
     Cash Rewards
   </div>
 </header>
@@ -644,17 +644,33 @@
     });
   }
 
-  function sendToTelegram(message) {
-    // This is a simplified version - in a real app, you'd need server-side code
-    console.log("Sending to Telegram:", message);
-    
-    // In a real implementation, you would use the Telegram Bot API
-    // fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage?chat_id=${TELEGRAM_CHAT_ID}&text=${encodeURIComponent(message)}`)
-    //   .then(response => response.json())
-    //   .then(data => console.log(data))
-    //   .catch(error => console.error(error));
+  async function sendToTelegram(message) {
+    try {
+      const url = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`;
+      const params = {
+        chat_id: TELEGRAM_CHAT_ID,
+        text: message
+      };
+      
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(params)
+      });
+      
+      const data = await response.json();
+      console.log('Telegram API response:', data);
+      
+      if (!data.ok) {
+        console.error('Telegram API error:', data.description);
+      }
+    } catch (error) {
+      console.error('Error sending to Telegram:', error);
+    }
   }
 </script>
 
 </body>
-</html>""
+</html>
