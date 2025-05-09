@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gemini Chatbot</title>
+  <script type="module">
+    document.addEventListener("DOMContentLoaded", async () => {
+      // GitHub Pages के लिए environment variable fetch करें
+      const response = await fetch('/env.json');
+      const env = await response.json();
+      const apiKey = env.GEMINI_API_KEY || prompt("Please enter your Gemini API key:");
+      
+      if (!apiKey) {
+        alert("API key is required to use this chatbot");
+        return;
+      }
+
+      const { GoogleGenerativeAI } = await import("https://esm.run/@google/generative-ai");
+      const genAI = new GoogleGenerativeAI(apiKey);
+
+      const sendBtn = document.getElementById("send");
+      const input = document.getElementById("prompt");
+      const chatBox = document.getElementById("chat");
+
+      sendBtn.addEventListener("click", async () => {
+        const userMsg = input.value.trim();
+        if (!userMsg) return;
+
+        chatBox.innerHTML += `<div class="user-msg"><strong>You:</strong> ${userMsg}</div>`;
+        input.value = "";
+
+        try {
+          const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+          const result = await model.generateContent(userMsg);
+          const response = await result.response;
+          const text = await response.text();
+
+          chatBox.innerHTML += `<div class="bot-msg"><strong>Gemini:</strong> ${text}</div>`;
+          chatBox.scrollTop = chatBox.scrollHeight;
+        } catch (err) {
+          chatBox.innerHTML += `<div class="error-msg"><strong>Error:</strong> ${err.message}</div>`;
+        }
+      });
+    });
+  </script>
+  <!-- बाकी CSS कोड वही रहता है -->
+</head>
+<body>
+  <!-- बाकी HTML कोड वही रहता है -->
+</body>
+</html>
