@@ -1,0 +1,19 @@
+name: Test Secret
+
+on: push
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Show if secret is set
+      run: |
+        if [ -z "${{ secrets.MY_SECRET }}" ]; then
+          echo "❌ Secret is NOT set"
+          exit 1
+        else
+          echo "✅ Secret is set (but not showing value for security)"
+        fi
