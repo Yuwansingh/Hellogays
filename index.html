@@ -4,49 +4,117 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Gemini Chatbot</title>
+  <style>
+    /* पिछले वाला सारा CSS यहां रखें */
+    body {
+      font-family: 'Arial', sans-serif;
+      background: #f0f2f5;
+      margin: 0;
+      padding: 20px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+    /* बाकी सारा CSS... */
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Gemini Chatbot</h2>
+    <div id="chat"></div>
+    <div id="input-container">
+      <input type="text" id="prompt" placeholder="Type your message..." />
+      <button id="send">Send</button>
+    </div>
+  </div>
+
   <script type="module">
-    document.addEventListener("DOMContentLoaded", async () => {
-      // GitHub Pages के लिए environment variable fetch करें
-      const response = await fetch('/env.json');
-      const env = await response.json();
-      const apiKey = env.GEMINI_API_KEY || prompt("Please enter your Gemini API key:");
-      
+    // GitHub Pages के लिए env.json से API key लोड करने का प्रयास
+    async function loadApiKey() {
+      try {
+        const response = await fetch('/env.json');
+        if (!response.ok) throw new Error('Failed to load env.json');
+        const env = await response.json();
+        return env.GEMINI_API_KEY;
+      } catch (error) {
+        console.log('Using fallback API key method');
+        // अगर env.json नहीं मिला तो localStorage से या प्रॉम्प्ट से key लें
+        let apiKey = localStorage.getItem('gemini_api_key');
+        if (!apiKey) {
+          apiKey = prompt("Please enter your Gemini API key:");
+          if (apiKey) {
+            localStorage.setItem('gemini_api_key', apiKey);
+          }
+        }
+        return apiKey;
+      }
+    }
+
+    // मुख्य एप्लिकेशन लॉजिक
+    async function initApp() {
+      const apiKey = await loadApiKey();
       if (!apiKey) {
-        alert("API key is required to use this chatbot");
-        return;
+        document.getElementById('chat').innerHTML = `
+          <div class="error-msg">
+            API key is required to use this chatbot. Please refresh the page and enter your key.
+          </div>
+        `;
+        throw new Error("API key not provided");
       }
 
-      const { GoogleGenerativeAI } = await import("https://esm.run/@google/generative-ai");
+      // Google Generative AI लाइब्रेरी इम्पोर्ट करें
+      const { GoogleGenerativeAI } = await import("https://esm.js/@google/generative-ai");
       const genAI = new GoogleGenerativeAI(apiKey);
+      const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
+      // DOM एलिमेंट्स
       const sendBtn = document.getElementById("send");
       const input = document.getElementById("prompt");
       const chatBox = document.getElementById("chat");
 
-      sendBtn.addEventListener("click", async () => {
+      // मैसेज भेजने का फंक्शन
+      async function sendMessage() {
         const userMsg = input.value.trim();
         if (!userMsg) return;
 
-        chatBox.innerHTML += `<div class="user-msg"><strong>You:</strong> ${userMsg}</div>`;
+        chatBox.innerHTML += `<div class="user-msg">You: ${userMsg}</div>`;
         input.value = "";
-
+        
         try {
-          const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+          const loadingMsg = document.createElement('div');
+          loadingMsg.className = 'bot-msg';
+          loadingMsg.textContent = 'Gemini is typing...';
+          chatBox.appendChild(loadingMsg);
+          chatBox.scrollTop = chatBox.scrollHeight;
+
           const result = await model.generateContent(userMsg);
           const response = await result.response;
-          const text = await response.text();
-
-          chatBox.innerHTML += `<div class="bot-msg"><strong>Gemini:</strong> ${text}</div>`;
+          const text = response.text();
+          
+          chatBox.removeChild(loadingMsg);
+          chatBox.innerHTML += `<div class="bot-msg">Gemini: ${text}</div>`;
           chatBox.scrollTop = chatBox.scrollHeight;
         } catch (err) {
-          chatBox.innerHTML += `<div class="error-msg"><strong>Error:</strong> ${err.message}</div>`;
+          console.error("Error:", err);
+          chatBox.innerHTML += `
+            <div class="error-msg">
+              Error: ${err.message || 'Failed to get response from Gemini'}
+            </div>
+          `;
+          chatBox.scrollTop = chatBox.scrollHeight;
         }
+      }
+
+      // इवेंट लिसनर्स
+      sendBtn.addEventListener("click", sendMessage);
+      input.addEventListener("keypress", (e) => {
+        if (e.key === "Enter") sendMessage();
       });
-    });
+    }
+
+    // ऐप इनिशियलाइज़ करें
+    initApp();
   </script>
-  <!-- बाकी CSS कोड वही रहता है -->
-</head>
-<body>
-  <!-- बाकी HTML कोड वही रहता है -->
 </body>
-</html>
+  </html>
