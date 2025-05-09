@@ -1,47 +1,14 @@
-name: Secret Test HTML
+name: Secret Test
 
-on:
-  push:
-    branches: [main]
+on: push
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+    - name: Checkout code
+      uses: actions/checkout@v2
 
-      - name: Create HTML page with secret
-        run: |
-          echo "<!DOCTYPE html>
-          <html>
-          <body>
-            <h2>Password Test</h2>
-            <input id='pass' type='password' placeholder='Enter Password'>
-            <button onclick='check()'>Submit</button>
-            <p id='msg'></p>
-            <script>
-              const secret = '${{ secrets.EMAIL_ADDRESS }}';
-              function check() {
-                const input = document.getElementById('pass').value;
-                const msg = document.getElementById('msg');
-                if (input === secret) {
-                  msg.textContent = 'Access Granted!';
-                  msg.style.color = 'green';
-                } else {
-                  msg.textContent = 'Access Denied!';
-                  msg.style.color = 'red';
-                }
-              }
-            </script>
-          </body>
-          </html>" > secret_test.html
-
-      - name: Push HTML file to repository
-        run: |
-          git config user.name github-actions
-          git config user.email github-actions@github.com
-          git add secret_test.html
-          git commit -m "Add secret test page"
-          git push
+    - name: Show Secret
+      run: echo "Secret password is ${{ secrets.EMAIL_ADDRESS }}"
