@@ -1,0 +1,1650 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Free Fire Map Share</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        :root {
+            --bg-color: #121212;
+            --card-color: #1e1e1e;
+            --text-color: #ffffff;
+            --primary-color: #4a6bff;
+            --secondary-color: #ff4a4a;
+            --input-bg: #2d2d2d;
+            --border-color: #333;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .search-header {
+            background-color: var(--card-color);
+            padding: 15px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+            display: none;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        
+        .search-container {
+            background-color: var(--input-bg);
+            border-radius: 20px;
+            padding: 8px 15px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .search-container i {
+            color: #777;
+            margin-right: 10px;
+        }
+        
+        .search-container input {
+            background-color: transparent;
+            border: none;
+            outline: none;
+            width: 100%;
+            font-size: 16px;
+            color: var(--text-color);
+        }
+        
+        .content-area {
+            flex: 1;
+            padding: 15px;
+            overflow-y: auto;
+            margin-bottom: 60px; /* Add margin to prevent content from being hidden behind fixed nav */
+        }
+        
+        .bottom-nav {
+            display: none;
+            background-color: var(--card-color);
+            padding: 10px 0;
+            box-shadow: 0 -2px 5px rgba(0,0,0,0.3);
+            justify-content: space-around;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            z-index: 10;
+        }
+        
+        .bottom-nav button {
+            background: none;
+            border: none;
+            color: var(--primary-color);
+            font-size: 14px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+            width: 50%; /* Make buttons take half width each */
+        }
+        
+        .bottom-nav button i {
+            font-size: 20px;
+            margin-bottom: 5px;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.7);
+            z-index: 100;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal-content {
+            background-color: var(--card-color);
+            padding: 20px;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+            color: var(--text-color);
+        }
+        
+        .modal-content h2 {
+            margin-bottom: 20px;
+            color: var(--primary-color);
+        }
+        
+        .thumbnail-upload-label {
+            display: block;
+            border: 2px dashed var(--border-color);
+            padding: 30px;
+            text-align: center;
+            margin-bottom: 20px;
+            cursor: pointer;
+            border-radius: 5px;
+            color: var(--text-color);
+        }
+        
+        .thumbnail-upload-label i {
+            font-size: 40px;
+            color: var(--primary-color);
+            display: block;
+            margin-bottom: 10px;
+        }
+        
+        .input-group {
+            margin-bottom: 15px;
+        }
+        
+        .input-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        
+        .input-group input, 
+        .input-group textarea {
+            width: 100%;
+            padding: 10px;
+            background-color: var(--input-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            font-size: 16px;
+            color: var(--text-color);
+        }
+        
+        .input-group textarea {
+            height: 100px;
+            resize: vertical;
+        }
+        
+        .code-input-container {
+            display: flex;
+        }
+        
+        .code-input-container input {
+            flex: 1;
+            border-top-right-radius: 0;
+            border-bottom-right-radius: 0;
+        }
+        
+        .code-input-container .copy-btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 0 15px;
+            border-top-right-radius: 5px;
+            border-bottom-right-radius: 5px;
+            cursor: pointer;
+        }
+        
+        #submit-btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 5px;
+            font-size: 16px;
+            width: 100%;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        
+        .loading {
+            text-align: center;
+            margin-top: 20px;
+            font-style: italic;
+            color: #777;
+        }
+        
+        .map-card {
+            background-color: var(--card-color);
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+            cursor: pointer;
+            position: relative;
+        }
+        
+        .map-thumbnail {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+            display: block;
+        }
+        
+        .map-card h3 {
+            padding: 10px 15px;
+            font-size: 18px;
+        }
+        
+        .map-code-display {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 15px 10px;
+        }
+        
+        .map-code-display span {
+            font-size: 14px;
+            color: #aaa;
+        }
+        
+        .map-code-display .copy-btn {
+            background: none;
+            border: none;
+            color: var(--primary-color);
+            cursor: pointer;
+        }
+        
+        .youtube-link {
+            display: block;
+            background-color: #ff0000;
+            color: white;
+            text-align: center;
+            padding: 8px;
+            margin: 0 15px 15px;
+            border-radius: 5px;
+            text-decoration: none;
+        }
+        
+        .youtube-link i {
+            margin-right: 5px;
+        }
+        
+        .uploader-info {
+            display: flex;
+            align-items: center;
+            padding: 0 15px 15px;
+            cursor: pointer;
+        }
+        
+        .profile-pic-container {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            overflow: hidden;
+            margin-right: 10px;
+        }
+        
+        .profile-pic {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .uploader-name {
+            font-size: 14px;
+            color: #aaa;
+        }
+        
+        .map-detail-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.9);
+            z-index: 200;
+            overflow: auto;
+            padding: 20px;
+        }
+        
+        .map-detail-content {
+            background-color: var(--card-color);
+            max-width: 800px;
+            margin: 20px auto;
+            border-radius: 10px;
+            overflow: hidden;
+            color: var(--text-color);
+        }
+        
+        .map-detail-thumbnail {
+            width: 100%;
+            max-height: 450px;
+            object-fit: cover;
+        }
+        
+        .map-detail-body {
+            padding: 20px;
+        }
+        
+        .map-detail-title {
+            font-size: 24px;
+            margin-bottom: 15px;
+        }
+        
+        .map-detail-code {
+            background-color: var(--input-bg);
+            padding: 10px 15px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .map-detail-description {
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+        
+        .close-detail {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            color: white;
+            font-size: 30px;
+            cursor: pointer;
+        }
+        
+        .login-container {
+            max-width: 400px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: var(--card-color);
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+        }
+        
+        .login-container h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: var(--primary-color);
+        }
+        
+        .login-input-group {
+            margin-bottom: 15px;
+            position: relative;
+        }
+        
+        .login-input-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        
+        .login-input-group input {
+            width: 100%;
+            padding: 10px;
+            background-color: var(--input-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            font-size: 16px;
+            color: var(--text-color);
+        }
+        
+        .login-btn {
+            width: 100%;
+            padding: 12px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        
+        .register-link {
+            text-align: center;
+            margin-top: 15px;
+        }
+        
+        .register-link a {
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+        
+        .error-message {
+            color: var(--secondary-color);
+            text-align: center;
+            margin-top: 10px;
+        }
+        
+        .profile-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            background-color: var(--card-color);
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .profile-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .profile-pic-large {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .profile-pic-large img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .edit-profile-pic {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            background-color: var(--primary-color);
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+        }
+        
+        .profile-name {
+            font-size: 18px;
+            font-weight: bold;
+        }
+        
+        .logout-btn {
+            background-color: var(--secondary-color);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        
+        .toast {
+            position: fixed;
+            bottom: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: var(--primary-color);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 4px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .toast.show {
+            opacity: 1;
+        }
+        
+        .toast i {
+            font-size: 18px;
+        }
+        
+        .password-toggle {
+            position: absolute;
+            right: 10px;
+            top: 35px;
+            cursor: pointer;
+            color: #777;
+        }
+        
+        .forgot-password {
+            text-align: right;
+            margin-top: 5px;
+        }
+        
+        .forgot-password a {
+            color: #777;
+            font-size: 14px;
+            text-decoration: none;
+        }
+        
+        .forgot-password a:hover {
+            color: var(--primary-color);
+        }
+        
+        .recovery-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.7);
+            z-index: 100;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .recovery-content {
+            background-color: var(--card-color);
+            padding: 20px;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 400px;
+            color: var(--text-color);
+        }
+        
+        .recovery-content h2 {
+            margin-bottom: 20px;
+            color: var(--primary-color);
+        }
+        
+        .recovery-btn {
+            width: 100%;
+            padding: 12px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        
+        .close-recovery {
+            float: right;
+            cursor: pointer;
+            font-size: 24px;
+        }
+
+        /* Floating Button Styles */
+        .floating-btn {
+            position: fixed;
+            bottom: 80px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            background-color: var(--primary-color);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-size: 24px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+            cursor: pointer;
+            z-index: 50;
+            transition: all 0.3s;
+        }
+
+        .floating-btn:hover {
+            transform: scale(1.1);
+            background-color: #3a5bef;
+        }
+
+        /* Delete Button Styles */
+        .delete-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: var(--secondary-color);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            z-index: 10;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .map-card:hover .delete-btn {
+            opacity: 1;
+        }
+
+        .confirm-delete {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.7);
+            z-index: 300;
+            display: none;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .confirm-delete-content {
+            background-color: var(--card-color);
+            padding: 20px;
+            border-radius: 10px;
+            max-width: 400px;
+            width: 90%;
+            text-align: center;
+        }
+
+        .confirm-delete-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .confirm-delete-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .confirm-delete-btn.yes {
+            background-color: var(--secondary-color);
+            color: white;
+        }
+
+        .confirm-delete-btn.no {
+            background-color: var(--input-bg);
+            color: var(--text-color);
+        }
+
+        /* Loader Styles */
+        .submit-loader {
+            display: none;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .submit-loader i {
+            font-size: 24px;
+            color: var(--primary-color);
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="search-header" id="search-header">
+        <div class="search-container">
+            <i class="fas fa-search"></i>
+            <input type="text" placeholder="Search maps..." id="search-input">
+        </div>
+    </header>
+
+    <main class="content-area" id="content-area">
+        <!-- Login form will be shown by default -->
+        <div class="login-container" id="login-container">
+            <h2>Login</h2>
+            <div class="error-message" id="login-error"></div>
+            <div class="login-input-group">
+                <label for="username">Username</label>
+                <input type="text" id="username" placeholder="Enter your username">
+            </div>
+            <div class="login-input-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" placeholder="Enter your password">
+                <i class="fas fa-eye password-toggle" id="toggle-password"></i>
+                <div class="forgot-password">
+                    <a href="#" id="forgot-password-link">Forgot Password?</a>
+                </div>
+            </div>
+            <button class="login-btn" id="login-btn">Login</button>
+            <div class="register-link">
+                Don't have an account? <a href="#" id="show-register">Register</a>
+            </div>
+        </div>
+
+        <div class="login-container" id="register-container" style="display: none;">
+            <h2>Register</h2>
+            <div class="error-message" id="register-error"></div>
+            <div class="login-input-group">
+                <label for="reg-username">Username</label>
+                <input type="text" id="reg-username" placeholder="Choose a username">
+            </div>
+            <div class="login-input-group">
+                <label for="reg-password">Password</label>
+                <input type="password" id="reg-password" placeholder="Create a password (min 6 chars)">
+                <i class="fas fa-eye password-toggle" id="toggle-reg-password"></i>
+            </div>
+            <button class="login-btn" id="register-btn">Register</button>
+            <div class="register-link">
+                Already have an account? <a href="#" id="show-login">Login</a>
+            </div>
+        </div>
+    </main>
+
+    <nav class="bottom-nav" id="bottom-nav">
+        <button id="home-btn"><i class="fas fa-home"></i> Home</button>
+        <button id="profile-btn"><i class="fas fa-user"></i> Profile</button>
+    </nav>
+
+    <!-- Floating Upload Button -->
+    <div class="floating-btn" id="floating-upload-btn">
+        <i class="fas fa-plus"></i>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div class="confirm-delete" id="confirm-delete">
+        <div class="confirm-delete-content">
+            <h3>Delete Map</h3>
+            <p>Are you sure you want to delete this map? This action cannot be undone.</p>
+            <div class="confirm-delete-buttons">
+                <button class="confirm-delete-btn yes" id="confirm-delete-yes">Yes, Delete</button>
+                <button class="confirm-delete-btn no" id="confirm-delete-no">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="upload-form-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" style="float: right; cursor: pointer; font-size: 24px;">&times;</span>
+            <h2>Upload Map</h2>
+            <label for="thumbnail-upload" class="thumbnail-upload-label">
+                <i class="fas fa-image"></i> Tap to upload Thumbnail
+                <input type="file" id="thumbnail-upload" accept="image/*" style="display: none;">
+                <img id="thumbnail-preview" src="#" alt="Thumbnail Preview" style="display: none; max-width: 100%; height: auto;">
+            </label>
+            <div class="input-group">
+                <label for="map-title">Map Title:</label>
+                <input type="text" id="map-title" placeholder="Enter map title">
+            </div>
+            <div class="input-group">
+                <label for="map-code">Map Code:</label>
+                <div class="code-input-container">
+                    <input type="text" id="map-code" placeholder="Enter map code">
+                    <button class="copy-btn" onclick="copyMapCode()"><i class="fas fa-copy"></i></button>
+                </div>
+            </div>
+            <div class="input-group">
+                <label for="youtube-url">YouTube URL:</label>
+                <input type="url" id="youtube-url" placeholder="Enter YouTube URL (optional)">
+            </div>
+            <div class="input-group">
+                <label for="description">Description:</label>
+                <textarea id="description" placeholder="Enter map description"></textarea>
+            </div>
+            <button id="submit-btn">Submit</button>
+            <div id="submit-loader" class="submit-loader">
+                <i class="fas fa-spinner"></i> Uploading map...
+            </div>
+        </div>
+    </div>
+
+    <div id="map-detail-modal" class="map-detail-modal">
+        <span class="close-detail">&times;</span>
+        <div class="map-detail-content">
+            <img id="detail-thumbnail" class="map-detail-thumbnail" src="" alt="Map Thumbnail">
+            <div class="map-detail-body">
+                <h2 id="detail-title" class="map-detail-title"></h2>
+                <div class="map-detail-code">
+                    <span>Map Code: <span id="detail-code"></span></span>
+                    <button class="copy-btn" id="copy-detail-code"><i class="fas fa-copy"></i></button>
+                </div>
+                <a id="detail-youtube" href="" class="youtube-link" target="_blank"><i class="fab fa-youtube"></i> Watch on YouTube</a>
+                <p id="detail-description" class="map-detail-description"></p>
+                
+                <div class="uploader-info" id="detail-uploader">
+                    <div class="profile-pic-container">
+                        <img src="" alt="Profile Picture" class="profile-pic">
+                    </div>
+                    <span class="uploader-name"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="recovery-modal" class="recovery-modal">
+        <div class="recovery-content">
+            <span class="close-recovery">&times;</span>
+            <h2>Recover Password</h2>
+            <div class="error-message" id="recovery-error"></div>
+            <div class="login-input-group">
+                <label for="recovery-username">Username</label>
+                <input type="text" id="recovery-username" placeholder="Enter your username">
+            </div>
+            <button class="recovery-btn" id="recovery-btn">Recover Password</button>
+            <div id="recovery-result" class="loading" style="display: none;"></div>
+        </div>
+    </div>
+
+    <div id="toast" class="toast">
+        <i class="fas fa-check-circle"></i>
+        <span id="toast-message"></span>
+    </div>
+
+    <template id="map-card-template">
+        <div class="map-card">
+            <button class="delete-btn"><i class="fas fa-trash"></i></button>
+            <img src="" alt="Map Thumbnail" class="map-thumbnail">
+            <h3 class="map-title"></h3>
+            <div class="map-code-display">
+                <span>Map Code: <span class="map-code"></span></span>
+                <button class="copy-btn"><i class="fas fa-copy"></i></button>
+            </div>
+            <div class="uploader-info">
+                <div class="profile-pic-container">
+                    <img src="" alt="Profile Picture" class="profile-pic">
+                </div>
+                <span class="uploader-name"></span>
+            </div>
+        </div>
+    </template>
+
+    <template id="profile-page-template">
+        <div>
+            <div class="profile-header">
+                <div class="profile-info">
+                    <div class="profile-pic-large">
+                        <img src="" alt="Profile Picture" class="profile-pic">
+                        <label for="profile-pic-upload" class="edit-profile-pic">
+                            <i class="fas fa-camera"></i>
+                            <input type="file" id="profile-pic-upload" accept="image/*" style="display: none;">
+                        </label>
+                    </div>
+                    <span class="profile-name" id="profile-username"></span>
+                </div>
+                <button class="logout-btn" id="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</button>
+            </div>
+            <h3 style="margin-bottom: 15px;">Your Uploaded Maps</h3>
+            <div id="uploaded-maps-container">
+                <!-- User's uploaded maps will be inserted here -->
+            </div>
+        </div>
+    </template>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <script>
+        // Firebase configuration (removed auth related config)
+        const firebaseConfig = {
+            databaseURL: "https://free-fire-craftaland-default-rtdb.firebaseio.com"
+        };
+
+        // Initialize Firebase (only database)
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
+        // ImgBB API key
+        const IMGBB_API_KEY = 'ac36a174ebd65fec02ea7f14ed716a20';
+
+        // DOM elements
+        const searchHeader = document.getElementById('search-header');
+        const contentArea = document.getElementById('content-area');
+        const bottomNav = document.getElementById('bottom-nav');
+        const loginContainer = document.getElementById('login-container');
+        const registerContainer = document.getElementById('register-container');
+        const loginBtn = document.getElementById('login-btn');
+        const registerBtn = document.getElementById('register-btn');
+        const showRegister = document.getElementById('show-register');
+        const showLogin = document.getElementById('show-login');
+        const loginError = document.getElementById('login-error');
+        const registerError = document.getElementById('register-error');
+        const floatingUploadBtn = document.getElementById('floating-upload-btn');
+        const uploadFormModal = document.getElementById('upload-form-modal');
+        const closeModal = document.querySelector('.close-modal');
+        const submitBtn = document.getElementById('submit-btn');
+        const submitLoader = document.getElementById('submit-loader');
+        const thumbnailUpload = document.getElementById('thumbnail-upload');
+        const thumbnailPreview = document.getElementById('thumbnail-preview');
+        const homeBtn = document.getElementById('home-btn');
+        const profileBtn = document.getElementById('profile-btn');
+        const mapCardTemplate = document.getElementById('map-card-template');
+        const profilePageTemplate = document.getElementById('profile-page-template');
+        const mapDetailModal = document.getElementById('map-detail-modal');
+        const closeDetail = document.querySelector('.close-detail');
+        const togglePassword = document.getElementById('toggle-password');
+        const toggleRegPassword = document.getElementById('toggle-reg-password');
+        const passwordInput = document.getElementById('password');
+        const regPasswordInput = document.getElementById('reg-password');
+        const forgotPasswordLink = document.getElementById('forgot-password-link');
+        const recoveryModal = document.getElementById('recovery-modal');
+        const closeRecovery = document.querySelector('.close-recovery');
+        const recoveryBtn = document.getElementById('recovery-btn');
+        const recoveryError = document.getElementById('recovery-error');
+        const recoveryResult = document.getElementById('recovery-result');
+        const confirmDeleteModal = document.getElementById('confirm-delete');
+        const confirmDeleteYes = document.getElementById('confirm-delete-yes');
+        const confirmDeleteNo = document.getElementById('confirm-delete-no');
+
+        // Global variables
+        let currentUser = null;
+        let thumbnailFile = null;
+        let mapToDelete = null;
+
+        // Toast notification function
+        function showToast(message, duration = 3000) {
+            const toast = document.getElementById('toast');
+            const toastMessage = document.getElementById('toast-message');
+            
+            toastMessage.textContent = message;
+            toast.classList.add('show');
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, duration);
+        }
+
+        // Toggle password visibility
+        function togglePasswordVisibility(input, icon) {
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                input.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        }
+
+        // Upload image to ImgBB
+        async function uploadImageToImgBB(file) {
+            const formData = new FormData();
+            formData.append('image', file);
+            
+            try {
+                const response = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const data = await response.json();
+                if (data.success) {
+                    return data.data.url;
+                } else {
+                    throw new Error('Image upload failed');
+                }
+            } catch (error) {
+                console.error('Error uploading image:', error);
+                throw error;
+            }
+        }
+
+        // Initialize the app
+        function initApp() {
+            // Check if user is logged in from localStorage
+            const loggedInUser = localStorage.getItem('currentUser');
+            if (loggedInUser) {
+                currentUser = JSON.parse(loggedInUser);
+                showAppContent();
+                loadHomepage();
+            } else {
+                showAuthForms();
+            }
+        }
+
+        // Show authentication forms
+        function showAuthForms() {
+            searchHeader.style.display = 'none';
+            bottomNav.style.display = 'none';
+            floatingUploadBtn.style.display = 'none';
+            loginContainer.style.display = 'block';
+            registerContainer.style.display = 'none';
+            contentArea.innerHTML = '';
+            contentArea.appendChild(loginContainer);
+            contentArea.appendChild(registerContainer);
+        }
+
+        // Show app content after login
+        function showAppContent() {
+            searchHeader.style.display = 'block';
+            bottomNav.style.display = 'flex';
+            floatingUploadBtn.style.display = 'flex';
+            loginContainer.style.display = 'none';
+            registerContainer.style.display = 'none';
+        }
+
+        // Login function (now using only database)
+        function login(username, password) {
+            database.ref('users').orderByChild('username').equalTo(username).once('value')
+                .then(snapshot => {
+                    const users = snapshot.val();
+                    if (!users) {
+                        throw new Error('Username not found');
+                    }
+                    
+                    // Find the user with matching username and password
+                    let userFound = null;
+                    for (const userId in users) {
+                        if (users[userId].password === password) {
+                            userFound = {
+                                uid: userId,
+                                ...users[userId]
+                            };
+                            break;
+                        }
+                    }
+                    
+                    if (!userFound) {
+                        throw new Error('Incorrect password');
+                    }
+                    
+                    // Set current user
+                    currentUser = userFound;
+                    localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                    
+                    // Login successful
+                    loginError.textContent = '';
+                    showToast('Login successful!');
+                    showAppContent();
+                    loadHomepage();
+                })
+                .catch(error => {
+                    // Handle errors
+                    loginError.textContent = error.message;
+                });
+        }
+
+        // Register function (now using only database)
+        function register(username, password) {
+            // First check if username already exists
+            database.ref('usernames').once('value')
+                .then(snapshot => {
+                    if (snapshot.hasChild(username)) {
+                        throw new Error('Username already exists');
+                    }
+                    
+                    // Create user in database
+                    const newUserRef = database.ref('users').push();
+                    const userId = newUserRef.key;
+                    
+                    return newUserRef.set({
+                        username: username,
+                        password: password,
+                        profilePic: 'https://i.ibb.co/7QZ1D1G/default-profile.png',
+                        createdAt: firebase.database.ServerValue.TIMESTAMP
+                    }).then(() => {
+                        // Also store username in separate node for easy checking
+                        return database.ref('usernames/' + username).set(true);
+                    }).then(() => {
+                        // Return the new user data
+                        return {
+                            uid: userId,
+                            username: username,
+                            password: password,
+                            profilePic: 'https://i.ibb.co/7QZ1D1G/default-profile.png'
+                        };
+                    });
+                })
+                .then((userData) => {
+                    // Registration complete
+                    showToast('Registration successful!');
+                    // Automatically log in the user
+                    currentUser = userData;
+                    localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                    showAppContent();
+                    loadHomepage();
+                })
+                .catch(error => {
+                    // Handle errors
+                    registerError.textContent = error.message;
+                });
+        }
+
+        // Password recovery function
+        function recoverPassword(username) {
+            recoveryError.textContent = '';
+            recoveryResult.style.display = 'none';
+            
+            // First check if username exists
+            database.ref('usernames/' + username).once('value')
+                .then(snapshot => {
+                    if (!snapshot.exists()) {
+                        throw new Error('Username not found');
+                    }
+                    
+                    // Get the user's data
+                    return database.ref('users').orderByChild('username').equalTo(username).once('value');
+                })
+                .then(snapshot => {
+                    const users = snapshot.val();
+                    if (!users) {
+                        throw new Error('User data not found');
+                    }
+                    
+                    // Get the first user (should be only one)
+                    const userId = Object.keys(users)[0];
+                    const userData = users[userId];
+                    
+                    // Show the password to the user
+                    recoveryResult.innerHTML = `Your password is: <strong>${userData.password}</strong><br><br>Please login with this password.`;
+                    recoveryResult.style.display = 'block';
+                })
+                .catch(error => {
+                    recoveryError.textContent = error.message;
+                });
+        }
+
+        // Load homepage with maps
+        function loadHomepage() {
+            contentArea.innerHTML = '<div class="loading">Loading maps...</div>';
+            
+            // Fetch maps from Firebase
+            database.ref('maps').once('value')
+                .then(snapshot => {
+                    const maps = snapshot.val();
+                    contentArea.innerHTML = '';
+                    
+                    if (maps) {
+                        // Convert object to array and reverse to show newest first
+                        const mapsArray = Object.entries(maps).map(([id, map]) => ({ id, ...map }));
+                        mapsArray.reverse();
+                        
+                        mapsArray.forEach(mapData => {
+                            const card = mapCardTemplate.content.cloneNode(true);
+                            card.querySelector('.map-thumbnail').src = mapData.thumbnail || 'https://i.ibb.co/0jQ7ZJQ/default-thumbnail.jpg';
+                            card.querySelector('.map-title').textContent = mapData.title;
+                            card.querySelector('.map-code').textContent = mapData.code;
+                            
+                            // Show delete button only for current user's maps
+                            const deleteBtn = card.querySelector('.delete-btn');
+                            if (currentUser && mapData.uploaderId === currentUser.uid) {
+                                deleteBtn.style.display = 'flex';
+                                deleteBtn.addEventListener('click', (e) => {
+                                    e.stopPropagation();
+                                    showDeleteConfirmation(mapData);
+                                });
+                            } else {
+                                deleteBtn.style.display = 'none';
+                            }
+                            
+                            const copyButton = card.querySelector('.copy-btn');
+                            copyButton.addEventListener('click', (e) => {
+                                e.stopPropagation();
+                                navigator.clipboard.writeText(mapData.code);
+                                showToast(`Map code "${mapData.code}" copied!`);
+                            });
+                            
+                            // Add click event to show map details
+                            card.querySelector('.map-card').addEventListener('click', () => {
+                                showMapDetail(mapData);
+                            });
+                            
+                            // Set uploader info and make it clickable
+                            const uploaderInfo = card.querySelector('.uploader-info');
+                            database.ref('users/' + mapData.uploaderId).once('value')
+                                .then(userSnapshot => {
+                                    const user = userSnapshot.val();
+                                    if (user) {
+                                        uploaderInfo.querySelector('.uploader-name').textContent = user.username;
+                                        uploaderInfo.querySelector('.profile-pic').src = user.profilePic || 'https://i.ibb.co/7QZ1D1G/default-profile.png';
+                                        
+                                        // Make uploader info clickable to view profile
+                                        uploaderInfo.addEventListener('click', (e) => {
+                                            e.stopPropagation();
+                                            viewUserProfile(mapData.uploaderId);
+                                        });
+                                    }
+                                });
+                            
+                            contentArea.appendChild(card);
+                        });
+                    } else {
+                        contentArea.innerHTML = '<p>No maps found. Be the first to upload one!</p>';
+                    }
+                })
+                .catch(error => {
+                    contentArea.innerHTML = `<p>Error loading maps: ${error.message}</p>`;
+                });
+        }
+
+        // Show delete confirmation
+        function showDeleteConfirmation(mapData) {
+            mapToDelete = mapData;
+            confirmDeleteModal.style.display = 'flex';
+        }
+
+        // Delete map function
+        function deleteMap() {
+            if (!mapToDelete || !currentUser) return;
+            
+            database.ref('maps/' + mapToDelete.id).remove()
+                .then(() => {
+                    showToast('Map deleted successfully!');
+                    confirmDeleteModal.style.display = 'none';
+                    loadHomepage();
+                })
+                .catch(error => {
+                    showToast('Error deleting map: ' + error.message);
+                });
+        }
+
+        // Show map details
+        function showMapDetail(mapData) {
+            document.getElementById('detail-title').textContent = mapData.title;
+            document.getElementById('detail-thumbnail').src = mapData.thumbnail || 'https://i.ibb.co/0jQ7ZJQ/default-thumbnail.jpg';
+            document.getElementById('detail-code').textContent = mapData.code;
+            
+            if (mapData.youtubeUrl) {
+                document.getElementById('detail-youtube').href = mapData.youtubeUrl;
+                document.getElementById('detail-youtube').style.display = 'block';
+            } else {
+                document.getElementById('detail-youtube').style.display = 'none';
+            }
+            
+            document.getElementById('detail-description').textContent = mapData.description || 'No description provided.';
+            
+            // Set uploader info in detail view and make it clickable
+            const uploaderInfo = document.getElementById('detail-uploader');
+            database.ref('users/' + mapData.uploaderId).once('value')
+                .then(userSnapshot => {
+                    const user = userSnapshot.val();
+                    if (user) {
+                        uploaderInfo.querySelector('.uploader-name').textContent = user.username;
+                        uploaderInfo.querySelector('.profile-pic').src = user.profilePic || 'https://i.ibb.co/7QZ1D1G/default-profile.png';
+                        
+                        // Make uploader info clickable to view profile
+                        uploaderInfo.addEventListener('click', () => {
+                            viewUserProfile(mapData.uploaderId);
+                        });
+                    }
+                });
+            
+            document.getElementById('copy-detail-code').addEventListener('click', () => {
+                navigator.clipboard.writeText(mapData.code);
+                showToast(`Map code "${mapData.code}" copied!`);
+            });
+            
+            mapDetailModal.style.display = 'block';
+        }
+
+        // View user profile
+        function viewUserProfile(userId) {
+            contentArea.innerHTML = '<div class="loading">Loading profile...</div>';
+            
+            // Get user data
+            database.ref('users/' + userId).once('value')
+                .then(userSnapshot => {
+                    const userData = userSnapshot.val();
+                    
+                    // Create profile page
+                    const profilePage = profilePageTemplate.content.cloneNode(true);
+                    
+                    // Set profile info
+                    profilePage.getElementById('profile-username').textContent = userData.username;
+                    profilePage.querySelector('.profile-pic').src = userData.profilePic || 'https://i.ibb.co/7QZ1D1G/default-profile.png';
+                    
+                    // Add profile picture upload functionality (only for current user)
+                    if (userId === currentUser?.uid) {
+                        const profilePicUpload = profilePage.getElementById('profile-pic-upload');
+                        const profilePic = profilePage.querySelector('.profile-pic');
+                        
+                        profilePicUpload.addEventListener('change', async (event) => {
+                            const file = event.target.files[0];
+                            if (file) {
+                                try {
+                                    showToast('Uploading profile picture...');
+                                    const imageUrl = await uploadImageToImgBB(file);
+                                    
+                                    // Update in Realtime Database
+                                    await database.ref('users/' + userId).update({
+                                        profilePic: imageUrl
+                                    });
+                                    
+                                    // Update current user data
+                                    currentUser.profilePic = imageUrl;
+                                    localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                                    
+                                    // Update profile picture display
+                                    profilePic.src = imageUrl;
+                                    showToast('Profile picture updated!');
+                                } catch (error) {
+                                    showToast('Error updating profile picture: ' + error.message);
+                                }
+                            }
+                        });
+                    }
+                    
+                    // Change logout button to back button when viewing others' profiles
+                    const logoutBtn = profilePage.getElementById('logout-btn');
+                    if (userId !== currentUser?.uid) {
+                        logoutBtn.innerHTML = '<i class="fas fa-arrow-left"></i> Back';
+                        logoutBtn.style.backgroundColor = '#4a6bff';
+                        logoutBtn.addEventListener('click', loadHomepage);
+                    } else {
+                        logoutBtn.addEventListener('click', () => {
+                            currentUser = null;
+                            localStorage.removeItem('currentUser');
+                            showAuthForms();
+                        });
+                    }
+                    
+                    // Get user's uploaded maps
+                    const uploadedMapsContainer = profilePage.getElementById('uploaded-maps-container');
+                    
+                    database.ref('maps').orderByChild('uploaderId').equalTo(userId).once('value')
+                        .then(mapsSnapshot => {
+                            const userMaps = mapsSnapshot.val();
+                            
+                            if (userMaps) {
+                                const mapsArray = Object.entries(userMaps).map(([id, map]) => ({ id, ...map }));
+                                mapsArray.reverse();
+                                
+                                mapsArray.forEach(mapData => {
+                                    const card = mapCardTemplate.content.cloneNode(true);
+                                    card.querySelector('.map-thumbnail').src = mapData.thumbnail || 'https://i.ibb.co/0jQ7ZJQ/default-thumbnail.jpg';
+                                    card.querySelector('.map-title').textContent = mapData.title;
+                                    card.querySelector('.map-code').textContent = mapData.code;
+                                    
+                                    // Show delete button only for current user's maps
+                                    const deleteBtn = card.querySelector('.delete-btn');
+                                    if (currentUser && mapData.uploaderId === currentUser.uid) {
+                                        deleteBtn.style.display = 'flex';
+                                        deleteBtn.addEventListener('click', (e) => {
+                                            e.stopPropagation();
+                                            showDeleteConfirmation(mapData);
+                                        });
+                                    } else {
+                                        deleteBtn.style.display = 'none';
+                                    }
+                                    
+                                    const copyButton = card.querySelector('.copy-btn');
+                                    copyButton.addEventListener('click', (e) => {
+                                        e.stopPropagation();
+                                        navigator.clipboard.writeText(mapData.code);
+                                        showToast(`Map code "${mapData.code}" copied!`);
+                                    });
+                                    
+                                    // Add click event to show map details
+                                    card.querySelector('.map-card').addEventListener('click', () => {
+                                        showMapDetail(mapData);
+                                    });
+                                    
+                                    // Don't show uploader info in profile view
+                                    card.querySelector('.uploader-info').style.display = 'none';
+                                    
+                                    uploadedMapsContainer.appendChild(card);
+                                });
+                            } else {
+                                uploadedMapsContainer.innerHTML = '<p>No maps uploaded yet.</p>';
+                            }
+                        });
+                    
+                    contentArea.innerHTML = '';
+                    contentArea.appendChild(profilePage);
+                });
+        }
+
+        // Load current user's profile page
+        function loadProfilePage() {
+            if (currentUser) {
+                viewUserProfile(currentUser.uid);
+            } else {
+                showAuthForms();
+            }
+        }
+
+        // Upload map function
+        async function uploadMap(title, code, youtubeUrl, description) {
+            if (!title || !code) {
+                showToast('Please fill in all required fields');
+                return;
+            }
+            
+            if (!currentUser) {
+                showToast('Please login to upload maps');
+                return;
+            }
+            
+            // Show loader and disable submit button
+            submitLoader.style.display = 'block';
+            submitBtn.disabled = true;
+            
+            try {
+                let thumbnailUrl = 'https://i.ibb.co/0jQ7ZJQ/default-thumbnail.jpg';
+                
+                // Upload thumbnail if provided
+                if (thumbnailFile) {
+                    thumbnailUrl = await uploadImageToImgBB(thumbnailFile);
+                }
+                
+                // Create map data
+                const mapData = {
+                    title: title,
+                    code: code,
+                    youtubeUrl: youtubeUrl || '',
+                    description: description || '',
+                    uploaderId: currentUser.uid,
+                    uploaderName: currentUser.username || 'Anonymous',
+                    createdAt: firebase.database.ServerValue.TIMESTAMP,
+                    thumbnail: thumbnailUrl
+                };
+                
+                // Save to Firebase
+                const newMapRef = database.ref('maps').push();
+                await newMapRef.set(mapData);
+                
+                // Hide loader and re-enable submit button
+                submitLoader.style.display = 'none';
+                submitBtn.disabled = false;
+                uploadFormModal.style.display = 'none';
+                
+                // Reset form
+                document.getElementById('map-title').value = '';
+                document.getElementById('map-code').value = '';
+                document.getElementById('youtube-url').value = '';
+                document.getElementById('description').value = '';
+                thumbnailPreview.style.display = 'none';
+                thumbnailFile = null;
+                
+                // Show success toast
+                showToast('Map uploaded successfully!');
+                
+                // Reload homepage to show new map
+                loadHomepage();
+            } catch (error) {
+                // Hide loader and re-enable submit button on error
+                submitLoader.style.display = 'none';
+                submitBtn.disabled = false;
+                showToast('Error uploading map: ' + error.message);
+            }
+        }
+
+        // Copy map code function
+        function copyMapCode() {
+            const mapCodeInput = document.getElementById('map-code');
+            mapCodeInput.select();
+            document.execCommand('copy');
+            showToast('Map code copied!');
+        }
+
+        // Event listeners
+        document.addEventListener('DOMContentLoaded', () => {
+            initApp();
+            
+            // Toggle password visibility
+            togglePassword.addEventListener('click', () => {
+                togglePasswordVisibility(passwordInput, togglePassword);
+            });
+            
+            toggleRegPassword.addEventListener('click', () => {
+                togglePasswordVisibility(regPasswordInput, toggleRegPassword);
+            });
+            
+            // Login form
+            loginBtn.addEventListener('click', () => {
+                const username = document.getElementById('username').value;
+                const password = document.getElementById('password').value;
+                
+                if (!username || !password) {
+                    loginError.textContent = 'Please enter both username and password';
+                    return;
+                }
+                
+                login(username, password);
+            });
+            
+            // Register form
+            registerBtn.addEventListener('click', () => {
+                const username = document.getElementById('reg-username').value;
+                const password = document.getElementById('reg-password').value;
+                
+                if (username.length < 3) {
+                    registerError.textContent = 'Username must be at least 3 characters';
+                    return;
+                }
+                
+                if (password.length < 6) {
+                    registerError.textContent = 'Password must be at least 6 characters';
+                    return;
+                }
+                
+                register(username, password);
+            });
+            
+            // Toggle between login and register forms
+            showRegister.addEventListener('click', (e) => {
+                e.preventDefault();
+                loginContainer.style.display = 'none';
+                registerContainer.style.display = 'block';
+            });
+            
+            showLogin.addEventListener('click', (e) => {
+                e.preventDefault();
+                registerContainer.style.display = 'none';
+                loginContainer.style.display = 'block';
+            });
+            
+            // Upload modal
+            floatingUploadBtn.addEventListener('click', () => {
+                if (!currentUser) {
+                    showToast('Please login to upload maps');
+                    return;
+                }
+                uploadFormModal.style.display = 'flex';
+            });
+            
+            closeModal.addEventListener('click', () => {
+                uploadFormModal.style.display = 'none';
+            });
+            
+            // Submit map upload
+            submitBtn.addEventListener('click', () => {
+                const title = document.getElementById('map-title').value;
+                const code = document.getElementById('map-code').value;
+                const youtubeUrl = document.getElementById('youtube-url').value;
+                const description = document.getElementById('description').value;
+                
+                uploadMap(title, code, youtubeUrl, description);
+            });
+            
+            // Thumbnail upload
+            thumbnailUpload.addEventListener('change', (event) => {
+                const file = event.target.files[0];
+                if (file) {
+                    thumbnailFile = file;
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        thumbnailPreview.src = e.target.result;
+                        thumbnailPreview.style.display = 'block';
+                    };
+                    reader.readAsDataURL(file);
+                } else {
+                    thumbnailPreview.src = '#';
+                    thumbnailPreview.style.display = 'none';
+                    thumbnailFile = null;
+                }
+            });
+            
+            // Navigation
+            homeBtn.addEventListener('click', loadHomepage);
+            profileBtn.addEventListener('click', loadProfilePage);
+            
+            // Close map detail modal
+            closeDetail.addEventListener('click', () => {
+                mapDetailModal.style.display = 'none';
+            });
+            
+            // Close modal when clicking outside
+            window.addEventListener('click', (event) => {
+                if (event.target === uploadFormModal) {
+                    uploadFormModal.style.display = 'none';
+                }
+                if (event.target === mapDetailModal) {
+                    mapDetailModal.style.display = 'none';
+                }
+                if (event.target === recoveryModal) {
+                    recoveryModal.style.display = 'none';
+                }
+                if (event.target === confirmDeleteModal) {
+                    confirmDeleteModal.style.display = 'none';
+                }
+            });
+            
+            // Search functionality
+            const searchInput = document.getElementById('search-input');
+            searchInput.addEventListener('input', (e) => {
+                const searchTerm = e.target.value.toLowerCase();
+                if (searchTerm.length > 2) {
+                    const mapCards = document.querySelectorAll('.map-card');
+                    mapCards.forEach(card => {
+                        const title = card.querySelector('.map-title').textContent.toLowerCase();
+                        const code = card.querySelector('.map-code').textContent.toLowerCase();
+                        if (title.includes(searchTerm) || code.includes(searchTerm)) {
+                            card.style.display = 'block';
+                        } else {
+                            card.style.display = 'none';
+                        }
+                    });
+                } else if (searchTerm.length === 0) {
+                    const mapCards = document.querySelectorAll('.map-card');
+                    mapCards.forEach(card => {
+                        card.style.display = 'block';
+                    });
+                }
+            });
+            
+            // Forgot password functionality
+            forgotPasswordLink.addEventListener('click', (e) => {
+                e.preventDefault();
+                recoveryModal.style.display = 'flex';
+            });
+            
+            closeRecovery.addEventListener('click', () => {
+                recoveryModal.style.display = 'none';
+            });
+            
+            recoveryBtn.addEventListener('click', () => {
+                const username = document.getElementById('recovery-username').value;
+                if (!username) {
+                    recoveryError.textContent = 'Please enter your username';
+                    return;
+                }
+                
+                recoverPassword(username);
+            });
+            
+            // Delete confirmation
+            confirmDeleteYes.addEventListener('click', deleteMap);
+            confirmDeleteNo.addEventListener('click', () => {
+                confirmDeleteModal.style.display = 'none';
+                mapToDelete = null;
+            });
+        });
+    </script>
+</body>
+</html>
