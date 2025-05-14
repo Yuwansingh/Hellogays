@@ -67,7 +67,7 @@
             flex: 1;
             padding: 15px;
             overflow-y: auto;
-            margin-bottom: 60px; /* Add margin to prevent content from being hidden behind fixed nav */
+            margin-bottom: 60px;
         }
         
         .bottom-nav {
@@ -91,7 +91,7 @@
             flex-direction: column;
             align-items: center;
             cursor: pointer;
-            width: 50%; /* Make buttons take half width each */
+            width: 50%;
         }
         
         .bottom-nav button i {
@@ -235,21 +235,29 @@
         
         .map-code-display {
             display: flex;
-            justify-content: space-between;
-            align-items: center;
+            flex-direction: column;
             padding: 0 15px 10px;
+            gap: 8px;
         }
         
-        .map-code-display span {
+        .map-code-display .code-text {
+            word-break: break-all;
             font-size: 14px;
             color: #aaa;
         }
         
         .map-code-display .copy-btn {
-            background: none;
+            background-color: var(--primary-color);
+            color: white;
             border: none;
-            color: var(--primary-color);
+            padding: 8px;
+            border-radius: 5px;
             cursor: pointer;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
         }
         
         .youtube-link {
@@ -336,8 +344,26 @@
             border-radius: 5px;
             margin-bottom: 15px;
             display: flex;
-            justify-content: space-between;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .map-detail-code .code-text {
+            word-break: break-all;
+        }
+        
+        .map-detail-code .copy-btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 8px;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 100%;
+            display: flex;
             align-items: center;
+            justify-content: center;
+            gap: 8px;
         }
         
         .map-detail-description {
@@ -571,7 +597,6 @@
             font-size: 24px;
         }
 
-        /* Floating Button Styles */
         .floating-btn {
             position: fixed;
             bottom: 80px;
@@ -596,7 +621,6 @@
             background-color: #3a5bef;
         }
 
-        /* Delete Button Styles */
         .delete-btn {
             position: absolute;
             top: 10px;
@@ -667,7 +691,6 @@
             color: var(--text-color);
         }
 
-        /* Loader Styles */
         .submit-loader {
             display: none;
             text-align: center;
@@ -696,7 +719,6 @@
     </header>
 
     <main class="content-area" id="content-area">
-        <!-- Login form will be shown by default -->
         <div class="login-container" id="login-container">
             <h2>Login</h2>
             <div class="error-message" id="login-error"></div>
@@ -742,12 +764,10 @@
         <button id="profile-btn"><i class="fas fa-user"></i> Profile</button>
     </nav>
 
-    <!-- Floating Upload Button -->
     <div class="floating-btn" id="floating-upload-btn">
         <i class="fas fa-plus"></i>
     </div>
 
-    <!-- Delete Confirmation Modal -->
     <div class="confirm-delete" id="confirm-delete">
         <div class="confirm-delete-content">
             <h3>Delete Map</h3>
@@ -775,7 +795,7 @@
             <div class="input-group">
                 <label for="map-code">Map Code:</label>
                 <div class="code-input-container">
-                    <input type="text" id="map-code" placeholder="Enter map code"><br>
+                    <input type="text" id="map-code" placeholder="Enter map code">
                     <button class="copy-btn" onclick="copyMapCode()"><i class="fas fa-copy"></i></button>
                 </div>
             </div>
@@ -801,8 +821,8 @@
             <div class="map-detail-body">
                 <h2 id="detail-title" class="map-detail-title"></h2>
                 <div class="map-detail-code">
-                    <span>Map Code: <span id="detail-code"></span></span>
-                    <button class="copy-btn" id="copy-detail-code"><i class="fas fa-copy"></i></button>
+                    <span class="code-text">Map Code: <span id="detail-code"></span></span>
+                    <button class="copy-btn" id="copy-detail-code"><i class="fas fa-copy"></i> Copy Code</button>
                 </div>
                 <a id="detail-youtube" href="" class="youtube-link" target="_blank"><i class="fab fa-youtube"></i> Watch on YouTube</a>
                 <p id="detail-description" class="map-detail-description"></p>
@@ -842,8 +862,8 @@
             <img src="" alt="Map Thumbnail" class="map-thumbnail">
             <h3 class="map-title"></h3>
             <div class="map-code-display">
-                <span>Map Code: <span class="map-code"></span></span>
-                <button class="copy-btn"><i class="fas fa-copy"></i></button>
+                <span class="code-text">Map Code: <span class="map-code"></span></span>
+                <button class="copy-btn"><i class="fas fa-copy"></i> Copy Code</button>
             </div>
             <div class="uploader-info">
                 <div class="profile-pic-container">
@@ -879,19 +899,15 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
     <script>
-        // Firebase configuration (removed auth related config)
         const firebaseConfig = {
             databaseURL: "https://free-fire-craftaland-default-rtdb.firebaseio.com"
         };
 
-        // Initialize Firebase (only database)
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
 
-        // ImgBB API key
         const IMGBB_API_KEY = 'ac36a174ebd65fec02ea7f14ed716a20';
 
-        // DOM elements
         const searchHeader = document.getElementById('search-header');
         const contentArea = document.getElementById('content-area');
         const bottomNav = document.getElementById('bottom-nav');
@@ -930,12 +946,10 @@
         const confirmDeleteYes = document.getElementById('confirm-delete-yes');
         const confirmDeleteNo = document.getElementById('confirm-delete-no');
 
-        // Global variables
         let currentUser = null;
         let thumbnailFile = null;
         let mapToDelete = null;
 
-        // Toast notification function
         function showToast(message, duration = 3000) {
             const toast = document.getElementById('toast');
             const toastMessage = document.getElementById('toast-message');
@@ -948,7 +962,6 @@
             }, duration);
         }
 
-        // Toggle password visibility
         function togglePasswordVisibility(input, icon) {
             if (input.type === 'password') {
                 input.type = 'text';
@@ -961,7 +974,6 @@
             }
         }
 
-        // Upload image to ImgBB
         async function uploadImageToImgBB(file) {
             const formData = new FormData();
             formData.append('image', file);
@@ -984,9 +996,7 @@
             }
         }
 
-        // Initialize the app
         function initApp() {
-            // Check if user is logged in from localStorage
             const loggedInUser = localStorage.getItem('currentUser');
             if (loggedInUser) {
                 currentUser = JSON.parse(loggedInUser);
@@ -997,7 +1007,6 @@
             }
         }
 
-        // Show authentication forms
         function showAuthForms() {
             searchHeader.style.display = 'none';
             bottomNav.style.display = 'none';
@@ -1009,7 +1018,6 @@
             contentArea.appendChild(registerContainer);
         }
 
-        // Show app content after login
         function showAppContent() {
             searchHeader.style.display = 'block';
             bottomNav.style.display = 'flex';
@@ -1018,7 +1026,6 @@
             registerContainer.style.display = 'none';
         }
 
-        // Login function (now using only database)
         function login(username, password) {
             database.ref('users').orderByChild('username').equalTo(username).once('value')
                 .then(snapshot => {
@@ -1027,7 +1034,6 @@
                         throw new Error('Username not found');
                     }
                     
-                    // Find the user with matching username and password
                     let userFound = null;
                     for (const userId in users) {
                         if (users[userId].password === password) {
@@ -1043,32 +1049,26 @@
                         throw new Error('Incorrect password');
                     }
                     
-                    // Set current user
                     currentUser = userFound;
                     localStorage.setItem('currentUser', JSON.stringify(currentUser));
                     
-                    // Login successful
                     loginError.textContent = '';
                     showToast('Login successful!');
                     showAppContent();
                     loadHomepage();
                 })
                 .catch(error => {
-                    // Handle errors
                     loginError.textContent = error.message;
                 });
         }
 
-        // Register function (now using only database)
         function register(username, password) {
-            // First check if username already exists
             database.ref('usernames').once('value')
                 .then(snapshot => {
                     if (snapshot.hasChild(username)) {
                         throw new Error('Username already exists');
                     }
                     
-                    // Create user in database
                     const newUserRef = database.ref('users').push();
                     const userId = newUserRef.key;
                     
@@ -1078,10 +1078,8 @@
                         profilePic: 'https://i.ibb.co/7QZ1D1G/default-profile.png',
                         createdAt: firebase.database.ServerValue.TIMESTAMP
                     }).then(() => {
-                        // Also store username in separate node for easy checking
                         return database.ref('usernames/' + username).set(true);
                     }).then(() => {
-                        // Return the new user data
                         return {
                             uid: userId,
                             username: username,
@@ -1091,33 +1089,27 @@
                     });
                 })
                 .then((userData) => {
-                    // Registration complete
                     showToast('Registration successful!');
-                    // Automatically log in the user
                     currentUser = userData;
                     localStorage.setItem('currentUser', JSON.stringify(currentUser));
                     showAppContent();
                     loadHomepage();
                 })
                 .catch(error => {
-                    // Handle errors
                     registerError.textContent = error.message;
                 });
         }
 
-        // Password recovery function
         function recoverPassword(username) {
             recoveryError.textContent = '';
             recoveryResult.style.display = 'none';
             
-            // First check if username exists
             database.ref('usernames/' + username).once('value')
                 .then(snapshot => {
                     if (!snapshot.exists()) {
                         throw new Error('Username not found');
                     }
                     
-                    // Get the user's data
                     return database.ref('users').orderByChild('username').equalTo(username).once('value');
                 })
                 .then(snapshot => {
@@ -1126,11 +1118,9 @@
                         throw new Error('User data not found');
                     }
                     
-                    // Get the first user (should be only one)
                     const userId = Object.keys(users)[0];
                     const userData = users[userId];
                     
-                    // Show the password to the user
                     recoveryResult.innerHTML = `Your password is: <strong>${userData.password}</strong><br><br>Please login with this password.`;
                     recoveryResult.style.display = 'block';
                 })
@@ -1139,18 +1129,15 @@
                 });
         }
 
-        // Load homepage with maps
         function loadHomepage() {
             contentArea.innerHTML = '<div class="loading">Loading maps...</div>';
             
-            // Fetch maps from Firebase
             database.ref('maps').once('value')
                 .then(snapshot => {
                     const maps = snapshot.val();
                     contentArea.innerHTML = '';
                     
                     if (maps) {
-                        // Convert object to array and reverse to show newest first
                         const mapsArray = Object.entries(maps).map(([id, map]) => ({ id, ...map }));
                         mapsArray.reverse();
                         
@@ -1160,7 +1147,6 @@
                             card.querySelector('.map-title').textContent = mapData.title;
                             card.querySelector('.map-code').textContent = mapData.code;
                             
-                            // Show delete button only for current user's maps
                             const deleteBtn = card.querySelector('.delete-btn');
                             if (currentUser && mapData.uploaderId === currentUser.uid) {
                                 deleteBtn.style.display = 'flex';
@@ -1179,12 +1165,10 @@
                                 showToast(`Map code "${mapData.code}" copied!`);
                             });
                             
-                            // Add click event to show map details
                             card.querySelector('.map-card').addEventListener('click', () => {
                                 showMapDetail(mapData);
                             });
                             
-                            // Set uploader info and make it clickable
                             const uploaderInfo = card.querySelector('.uploader-info');
                             database.ref('users/' + mapData.uploaderId).once('value')
                                 .then(userSnapshot => {
@@ -1193,7 +1177,6 @@
                                         uploaderInfo.querySelector('.uploader-name').textContent = user.username;
                                         uploaderInfo.querySelector('.profile-pic').src = user.profilePic || 'https://i.ibb.co/7QZ1D1G/default-profile.png';
                                         
-                                        // Make uploader info clickable to view profile
                                         uploaderInfo.addEventListener('click', (e) => {
                                             e.stopPropagation();
                                             viewUserProfile(mapData.uploaderId);
@@ -1212,13 +1195,11 @@
                 });
         }
 
-        // Show delete confirmation
         function showDeleteConfirmation(mapData) {
             mapToDelete = mapData;
             confirmDeleteModal.style.display = 'flex';
         }
 
-        // Delete map function
         function deleteMap() {
             if (!mapToDelete || !currentUser) return;
             
@@ -1233,7 +1214,6 @@
                 });
         }
 
-        // Show map details
         function showMapDetail(mapData) {
             document.getElementById('detail-title').textContent = mapData.title;
             document.getElementById('detail-thumbnail').src = mapData.thumbnail || 'https://i.ibb.co/0jQ7ZJQ/default-thumbnail.jpg';
@@ -1248,7 +1228,6 @@
             
             document.getElementById('detail-description').textContent = mapData.description || 'No description provided.';
             
-            // Set uploader info in detail view and make it clickable
             const uploaderInfo = document.getElementById('detail-uploader');
             database.ref('users/' + mapData.uploaderId).once('value')
                 .then(userSnapshot => {
@@ -1257,7 +1236,6 @@
                         uploaderInfo.querySelector('.uploader-name').textContent = user.username;
                         uploaderInfo.querySelector('.profile-pic').src = user.profilePic || 'https://i.ibb.co/7QZ1D1G/default-profile.png';
                         
-                        // Make uploader info clickable to view profile
                         uploaderInfo.addEventListener('click', () => {
                             viewUserProfile(mapData.uploaderId);
                         });
@@ -1272,23 +1250,18 @@
             mapDetailModal.style.display = 'block';
         }
 
-        // View user profile
         function viewUserProfile(userId) {
             contentArea.innerHTML = '<div class="loading">Loading profile...</div>';
             
-            // Get user data
             database.ref('users/' + userId).once('value')
                 .then(userSnapshot => {
                     const userData = userSnapshot.val();
                     
-                    // Create profile page
                     const profilePage = profilePageTemplate.content.cloneNode(true);
                     
-                    // Set profile info
                     profilePage.getElementById('profile-username').textContent = userData.username;
                     profilePage.querySelector('.profile-pic').src = userData.profilePic || 'https://i.ibb.co/7QZ1D1G/default-profile.png';
                     
-                    // Add profile picture upload functionality (only for current user)
                     if (userId === currentUser?.uid) {
                         const profilePicUpload = profilePage.getElementById('profile-pic-upload');
                         const profilePic = profilePage.querySelector('.profile-pic');
@@ -1300,16 +1273,13 @@
                                     showToast('Uploading profile picture...');
                                     const imageUrl = await uploadImageToImgBB(file);
                                     
-                                    // Update in Realtime Database
                                     await database.ref('users/' + userId).update({
                                         profilePic: imageUrl
                                     });
                                     
-                                    // Update current user data
                                     currentUser.profilePic = imageUrl;
                                     localStorage.setItem('currentUser', JSON.stringify(currentUser));
                                     
-                                    // Update profile picture display
                                     profilePic.src = imageUrl;
                                     showToast('Profile picture updated!');
                                 } catch (error) {
@@ -1319,7 +1289,6 @@
                         });
                     }
                     
-                    // Change logout button to back button when viewing others' profiles
                     const logoutBtn = profilePage.getElementById('logout-btn');
                     if (userId !== currentUser?.uid) {
                         logoutBtn.innerHTML = '<i class="fas fa-arrow-left"></i> Back';
@@ -1333,7 +1302,6 @@
                         });
                     }
                     
-                    // Get user's uploaded maps
                     const uploadedMapsContainer = profilePage.getElementById('uploaded-maps-container');
                     
                     database.ref('maps').orderByChild('uploaderId').equalTo(userId).once('value')
@@ -1350,7 +1318,6 @@
                                     card.querySelector('.map-title').textContent = mapData.title;
                                     card.querySelector('.map-code').textContent = mapData.code;
                                     
-                                    // Show delete button only for current user's maps
                                     const deleteBtn = card.querySelector('.delete-btn');
                                     if (currentUser && mapData.uploaderId === currentUser.uid) {
                                         deleteBtn.style.display = 'flex';
@@ -1369,12 +1336,10 @@
                                         showToast(`Map code "${mapData.code}" copied!`);
                                     });
                                     
-                                    // Add click event to show map details
                                     card.querySelector('.map-card').addEventListener('click', () => {
                                         showMapDetail(mapData);
                                     });
                                     
-                                    // Don't show uploader info in profile view
                                     card.querySelector('.uploader-info').style.display = 'none';
                                     
                                     uploadedMapsContainer.appendChild(card);
@@ -1389,7 +1354,6 @@
                 });
         }
 
-        // Load current user's profile page
         function loadProfilePage() {
             if (currentUser) {
                 viewUserProfile(currentUser.uid);
@@ -1398,7 +1362,6 @@
             }
         }
 
-        // Upload map function
         async function uploadMap(title, code, youtubeUrl, description) {
             if (!title || !code) {
                 showToast('Please fill in all required fields');
@@ -1410,19 +1373,16 @@
                 return;
             }
             
-            // Show loader and disable submit button
             submitLoader.style.display = 'block';
             submitBtn.disabled = true;
             
             try {
                 let thumbnailUrl = 'https://i.ibb.co/0jQ7ZJQ/default-thumbnail.jpg';
                 
-                // Upload thumbnail if provided
                 if (thumbnailFile) {
                     thumbnailUrl = await uploadImageToImgBB(thumbnailFile);
                 }
                 
-                // Create map data
                 const mapData = {
                     title: title,
                     code: code,
@@ -1434,16 +1394,13 @@
                     thumbnail: thumbnailUrl
                 };
                 
-                // Save to Firebase
                 const newMapRef = database.ref('maps').push();
                 await newMapRef.set(mapData);
                 
-                // Hide loader and re-enable submit button
                 submitLoader.style.display = 'none';
                 submitBtn.disabled = false;
                 uploadFormModal.style.display = 'none';
                 
-                // Reset form
                 document.getElementById('map-title').value = '';
                 document.getElementById('map-code').value = '';
                 document.getElementById('youtube-url').value = '';
@@ -1451,20 +1408,15 @@
                 thumbnailPreview.style.display = 'none';
                 thumbnailFile = null;
                 
-                // Show success toast
                 showToast('Map uploaded successfully!');
-                
-                // Reload homepage to show new map
                 loadHomepage();
             } catch (error) {
-                // Hide loader and re-enable submit button on error
                 submitLoader.style.display = 'none';
                 submitBtn.disabled = false;
                 showToast('Error uploading map: ' + error.message);
             }
         }
 
-        // Copy map code function
         function copyMapCode() {
             const mapCodeInput = document.getElementById('map-code');
             mapCodeInput.select();
@@ -1472,11 +1424,9 @@
             showToast('Map code copied!');
         }
 
-        // Event listeners
         document.addEventListener('DOMContentLoaded', () => {
             initApp();
             
-            // Toggle password visibility
             togglePassword.addEventListener('click', () => {
                 togglePasswordVisibility(passwordInput, togglePassword);
             });
@@ -1485,7 +1435,6 @@
                 togglePasswordVisibility(regPasswordInput, toggleRegPassword);
             });
             
-            // Login form
             loginBtn.addEventListener('click', () => {
                 const username = document.getElementById('username').value;
                 const password = document.getElementById('password').value;
@@ -1498,7 +1447,6 @@
                 login(username, password);
             });
             
-            // Register form
             registerBtn.addEventListener('click', () => {
                 const username = document.getElementById('reg-username').value;
                 const password = document.getElementById('reg-password').value;
@@ -1516,7 +1464,6 @@
                 register(username, password);
             });
             
-            // Toggle between login and register forms
             showRegister.addEventListener('click', (e) => {
                 e.preventDefault();
                 loginContainer.style.display = 'none';
@@ -1529,7 +1476,6 @@
                 loginContainer.style.display = 'block';
             });
             
-            // Upload modal
             floatingUploadBtn.addEventListener('click', () => {
                 if (!currentUser) {
                     showToast('Please login to upload maps');
@@ -1542,7 +1488,6 @@
                 uploadFormModal.style.display = 'none';
             });
             
-            // Submit map upload
             submitBtn.addEventListener('click', () => {
                 const title = document.getElementById('map-title').value;
                 const code = document.getElementById('map-code').value;
@@ -1552,7 +1497,6 @@
                 uploadMap(title, code, youtubeUrl, description);
             });
             
-            // Thumbnail upload
             thumbnailUpload.addEventListener('change', (event) => {
                 const file = event.target.files[0];
                 if (file) {
@@ -1570,16 +1514,13 @@
                 }
             });
             
-            // Navigation
             homeBtn.addEventListener('click', loadHomepage);
             profileBtn.addEventListener('click', loadProfilePage);
             
-            // Close map detail modal
             closeDetail.addEventListener('click', () => {
                 mapDetailModal.style.display = 'none';
             });
             
-            // Close modal when clicking outside
             window.addEventListener('click', (event) => {
                 if (event.target === uploadFormModal) {
                     uploadFormModal.style.display = 'none';
@@ -1595,7 +1536,6 @@
                 }
             });
             
-            // Search functionality
             const searchInput = document.getElementById('search-input');
             searchInput.addEventListener('input', (e) => {
                 const searchTerm = e.target.value.toLowerCase();
@@ -1618,7 +1558,6 @@
                 }
             });
             
-            // Forgot password functionality
             forgotPasswordLink.addEventListener('click', (e) => {
                 e.preventDefault();
                 recoveryModal.style.display = 'flex';
@@ -1638,7 +1577,6 @@
                 recoverPassword(username);
             });
             
-            // Delete confirmation
             confirmDeleteYes.addEventListener('click', deleteMap);
             confirmDeleteNo.addEventListener('click', () => {
                 confirmDeleteModal.style.display = 'none';
