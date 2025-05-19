@@ -907,6 +907,16 @@
         const database = firebase.database();
 
         const IMGBB_API_KEY = 'ac36a174ebd65fec02ea7f14ed716a20';
+        const DEFAULT_THUMBNAIL = 'image.png';
+        
+        // List of random profile images from the internet
+        const DEFAULT_PROFILE_PIC = 'profile.png';  // यह नया वेरिएबल जोड़ें
+
+        // Function to get a random profile picture
+        function getRandomProfilePic() {
+            const randomIndex = Math.floor(Math.random() * RANDOM_PROFILE_PICS.length);
+            return RANDOM_PROFILE_PICS[randomIndex];
+        }
 
         const searchHeader = document.getElementById('search-header');
         const contentArea = document.getElementById('content-area');
@@ -972,6 +982,14 @@
                 icon.classList.remove('fa-eye-slash');
                 icon.classList.add('fa-eye');
             }
+        }
+
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
         }
 
         async function uploadImageToImgBB(file) {
@@ -1071,11 +1089,12 @@
                     
                     const newUserRef = database.ref('users').push();
                     const userId = newUserRef.key;
+                    const randomProfilePic = getRandomProfilePic();
                     
                     return newUserRef.set({
                         username: username,
                         password: password,
-                        profilePic: 'https://i.ibb.co/7QZ1D1G/default-profile.png',
+                        profilePic: randomProfilePic,
                         createdAt: firebase.database.ServerValue.TIMESTAMP
                     }).then(() => {
                         return database.ref('usernames/' + username).set(true);
@@ -1084,7 +1103,7 @@
                             uid: userId,
                             username: username,
                             password: password,
-                            profilePic: 'https://i.ibb.co/7QZ1D1G/default-profile.png'
+                            profilePic: randomProfilePic
                         };
                     });
                 })
@@ -1138,12 +1157,12 @@
                     contentArea.innerHTML = '';
                     
                     if (maps) {
-                        const mapsArray = Object.entries(maps).map(([id, map]) => ({ id, ...map }));
-                        mapsArray.reverse();
+                        let mapsArray = Object.entries(maps).map(([id, map]) => ({ id, ...map }));
+                        mapsArray = shuffleArray(mapsArray);
                         
                         mapsArray.forEach(mapData => {
                             const card = mapCardTemplate.content.cloneNode(true);
-                            card.querySelector('.map-thumbnail').src = mapData.thumbnail || 'https://i.ibb.co/0jQ7ZJQ/default-thumbnail.jpg';
+                            card.querySelector('.map-thumbnail').src = mapData.thumbnail || DEFAULT_THUMBNAIL;
                             card.querySelector('.map-title').textContent = mapData.title;
                             card.querySelector('.map-code').textContent = mapData.code;
                             
@@ -1175,7 +1194,8 @@
                                     const user = userSnapshot.val();
                                     if (user) {
                                         uploaderInfo.querySelector('.uploader-name').textContent = user.username;
-                                        uploaderInfo.querySelector('.profile-pic').src = user.profilePic || 'https://i.ibb.co/7QZ1D1G/default-profile.png';
+                                        // नया कोड:
+uploaderInfo.querySelector('.profile-pic').src = user.profilePic || DEFAULT_PROFILE_PIC;
                                         
                                         uploaderInfo.addEventListener('click', (e) => {
                                             e.stopPropagation();
@@ -1216,7 +1236,7 @@
 
         function showMapDetail(mapData) {
             document.getElementById('detail-title').textContent = mapData.title;
-            document.getElementById('detail-thumbnail').src = mapData.thumbnail || 'https://i.ibb.co/0jQ7ZJQ/default-thumbnail.jpg';
+            document.getElementById('detail-thumbnail').src = mapData.thumbnail || DEFAULT_THUMBNAIL;
             document.getElementById('detail-code').textContent = mapData.code;
             
             if (mapData.youtubeUrl) {
@@ -1231,16 +1251,16 @@
             const uploaderInfo = document.getElementById('detail-uploader');
             database.ref('users/' + mapData.uploaderId).once('value')
                 .then(userSnapshot => {
-                    const user = userSnapshot.val();
-                    if (user) {
-                        uploaderInfo.querySelector('.uploader-name').textContent = user.username;
-                        uploaderInfo.querySelector('.profile-pic').src = user.profilePic || 'https://i.ibb.co/7QZ1D1G/default-profile.png';
-                        
-                        uploaderInfo.addEventListener('click', () => {
-                            viewUserProfile(mapData.uploaderId);
-                        });
-                    }
-                });
+                                    const user = userSnapshot.val();
+                                    if (user) {
+                                        uploaderInfo.querySelector('.uploader-name').textContent = user.username;
+                                        uploaderInfo.querySelector('.profile-pic').src = user.profilePic || getRandomProfilePic();
+                                        
+                                        uploaderInfo.addEventListener('click', () => {
+                                            viewUserProfile(mapData.uploaderId);
+                                        });
+                                    }
+                                });
             
             document.getElementById('copy-detail-code').addEventListener('click', () => {
                 navigator.clipboard.writeText(mapData.code);
@@ -1260,7 +1280,8 @@
                     const profilePage = profilePageTemplate.content.cloneNode(true);
                     
                     profilePage.getElementById('profile-username').textContent = userData.username;
-                    profilePage.querySelector('.profile-pic').src = userData.profilePic || 'https://i.ibb.co/7QZ1D1G/default-profile.png';
+                    // नया कोड:
+profilePage.querySelector('.profile-pic').src = userData.profilePic || DEFAULT_PROFILE_PIC;
                     
                     if (userId === currentUser?.uid) {
                         const profilePicUpload = profilePage.getElementById('profile-pic-upload');
@@ -1309,12 +1330,12 @@
                             const userMaps = mapsSnapshot.val();
                             
                             if (userMaps) {
-                                const mapsArray = Object.entries(userMaps).map(([id, map]) => ({ id, ...map }));
+                                let mapsArray = Object.entries(userMaps).map(([id, map]) => ({ id, ...map }));
                                 mapsArray.reverse();
                                 
                                 mapsArray.forEach(mapData => {
                                     const card = mapCardTemplate.content.cloneNode(true);
-                                    card.querySelector('.map-thumbnail').src = mapData.thumbnail || 'https://i.ibb.co/0jQ7ZJQ/default-thumbnail.jpg';
+                                    card.querySelector('.map-thumbnail').src = mapData.thumbnail || DEFAULT_THUMBNAIL;
                                     card.querySelector('.map-title').textContent = mapData.title;
                                     card.querySelector('.map-code').textContent = mapData.code;
                                     
@@ -1377,7 +1398,7 @@
             submitBtn.disabled = true;
             
             try {
-                let thumbnailUrl = 'https://i.ibb.co/0jQ7ZJQ/default-thumbnail.jpg';
+                let thumbnailUrl = DEFAULT_THUMBNAIL;
                 
                 if (thumbnailFile) {
                     thumbnailUrl = await uploadImageToImgBB(thumbnailFile);
