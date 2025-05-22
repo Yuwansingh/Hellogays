@@ -908,15 +908,7 @@
 
         const IMGBB_API_KEY = 'ac36a174ebd65fec02ea7f14ed716a20';
         const DEFAULT_THUMBNAIL = 'image.png';
-        
-        // List of random profile images from the internet
-        const DEFAULT_PROFILE_PIC = 'profile.png';  // यह नया वेरिएबल जोड़ें
-
-        // Function to get a random profile picture
-        function getRandomProfilePic() {
-            const randomIndex = Math.floor(Math.random() * RANDOM_PROFILE_PICS.length);
-            return RANDOM_PROFILE_PICS[randomIndex];
-        }
+        const DEFAULT_PROFILE_PIC = 'profile.png';
 
         const searchHeader = document.getElementById('search-header');
         const contentArea = document.getElementById('content-area');
@@ -1089,12 +1081,11 @@
                     
                     const newUserRef = database.ref('users').push();
                     const userId = newUserRef.key;
-                    const randomProfilePic = getRandomProfilePic();
                     
                     return newUserRef.set({
                         username: username,
                         password: password,
-                        profilePic: randomProfilePic,
+                        profilePic: DEFAULT_PROFILE_PIC,
                         createdAt: firebase.database.ServerValue.TIMESTAMP
                     }).then(() => {
                         return database.ref('usernames/' + username).set(true);
@@ -1103,7 +1094,7 @@
                             uid: userId,
                             username: username,
                             password: password,
-                            profilePic: randomProfilePic
+                            profilePic: DEFAULT_PROFILE_PIC
                         };
                     });
                 })
@@ -1194,8 +1185,7 @@
                                     const user = userSnapshot.val();
                                     if (user) {
                                         uploaderInfo.querySelector('.uploader-name').textContent = user.username;
-                                        // नया कोड:
-uploaderInfo.querySelector('.profile-pic').src = user.profilePic || DEFAULT_PROFILE_PIC;
+                                        uploaderInfo.querySelector('.profile-pic').src = user.profilePic || DEFAULT_PROFILE_PIC;
                                         
                                         uploaderInfo.addEventListener('click', (e) => {
                                             e.stopPropagation();
@@ -1251,16 +1241,16 @@ uploaderInfo.querySelector('.profile-pic').src = user.profilePic || DEFAULT_PROF
             const uploaderInfo = document.getElementById('detail-uploader');
             database.ref('users/' + mapData.uploaderId).once('value')
                 .then(userSnapshot => {
-                                    const user = userSnapshot.val();
-                                    if (user) {
-                                        uploaderInfo.querySelector('.uploader-name').textContent = user.username;
-                                        uploaderInfo.querySelector('.profile-pic').src = user.profilePic || getRandomProfilePic();
-                                        
-                                        uploaderInfo.addEventListener('click', () => {
-                                            viewUserProfile(mapData.uploaderId);
-                                        });
-                                    }
-                                });
+                    const user = userSnapshot.val();
+                    if (user) {
+                        uploaderInfo.querySelector('.uploader-name').textContent = user.username;
+                        uploaderInfo.querySelector('.profile-pic').src = user.profilePic || DEFAULT_PROFILE_PIC;
+                        
+                        uploaderInfo.addEventListener('click', () => {
+                            viewUserProfile(mapData.uploaderId);
+                        });
+                    }
+                });
             
             document.getElementById('copy-detail-code').addEventListener('click', () => {
                 navigator.clipboard.writeText(mapData.code);
@@ -1280,8 +1270,7 @@ uploaderInfo.querySelector('.profile-pic').src = user.profilePic || DEFAULT_PROF
                     const profilePage = profilePageTemplate.content.cloneNode(true);
                     
                     profilePage.getElementById('profile-username').textContent = userData.username;
-                    // नया कोड:
-profilePage.querySelector('.profile-pic').src = userData.profilePic || DEFAULT_PROFILE_PIC;
+                    profilePage.querySelector('.profile-pic').src = userData.profilePic || DEFAULT_PROFILE_PIC;
                     
                     if (userId === currentUser?.uid) {
                         const profilePicUpload = profilePage.getElementById('profile-pic-upload');
