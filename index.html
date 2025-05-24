@@ -1084,6 +1084,7 @@
         let thumbnailFile = null;
         let mapToDelete = null;
         let currentMapToShare = null;
+        let cameFromSharedLink = false;
 
         function showToast(message, duration = 3000) {
             const toast = document.getElementById('toast');
@@ -1145,6 +1146,7 @@
             const mapId = urlParams.get('map');
             
             if (mapId) {
+                cameFromSharedLink = true;
                 // If there's a map ID in the URL, show that map directly
                 database.ref('maps/' + mapId).once('value')
                     .then(snapshot => {
@@ -1285,6 +1287,12 @@
         }
 
         function loadHomepage() {
+            // Remove the map parameter from URL if we're coming from a shared link
+            if (cameFromSharedLink) {
+                window.history.pushState({}, document.title, window.location.pathname);
+                cameFromSharedLink = false;
+            }
+            
             contentArea.innerHTML = '<div class="loading">Loading maps...</div>';
             
             database.ref('maps').once('value')
@@ -1733,6 +1741,10 @@
             
             closeDetail.addEventListener('click', () => {
                 mapDetailModal.style.display = 'none';
+                // If we came from a shared link, load homepage after closing
+                if (cameFromSharedLink) {
+                    loadHomepage();
+                }
             });
             
             window.addEventListener('click', (event) => {
@@ -1741,6 +1753,10 @@
                 }
                 if (event.target === mapDetailModal) {
                     mapDetailModal.style.display = 'none';
+                    // If we came from a shared link, load homepage after closing
+                    if (cameFromSharedLink) {
+                        loadHomepage();
+                    }
                 }
                 if (event.target === recoveryModal) {
                     recoveryModal.style.display = 'none';
