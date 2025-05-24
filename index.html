@@ -35,7 +35,7 @@
             background-color: var(--card-color);
             padding: 15px;
             box-shadow: 0 2px 5px rgba(0,0,0,0.3);
-            display: none;
+            display: block;
             position: sticky;
             top: 0;
             z-index: 10;
@@ -719,44 +719,7 @@
     </header>
 
     <main class="content-area" id="content-area">
-        <div class="login-container" id="login-container">
-            <h2>Login</h2>
-            <div class="error-message" id="login-error"></div>
-            <div class="login-input-group">
-                <label for="username">Username</label>
-                <input type="text" id="username" placeholder="Enter your username">
-            </div>
-            <div class="login-input-group">
-                <label for="password">Password</label>
-                <input type="password" id="password" placeholder="Enter your password">
-                <i class="fas fa-eye password-toggle" id="toggle-password"></i>
-                <div class="forgot-password">
-                    <a href="#" id="forgot-password-link">Forgot Password?</a>
-                </div>
-            </div>
-            <button class="login-btn" id="login-btn">Login</button>
-            <div class="register-link">
-                Don't have an account? <a href="#" id="show-register">Register</a>
-            </div>
-        </div>
-
-        <div class="login-container" id="register-container" style="display: none;">
-            <h2>Register</h2>
-            <div class="error-message" id="register-error"></div>
-            <div class="login-input-group">
-                <label for="reg-username">Username</label>
-                <input type="text" id="reg-username" placeholder="Choose a username">
-            </div>
-            <div class="login-input-group">
-                <label for="reg-password">Password</label>
-                <input type="password" id="reg-password" placeholder="Create a password (min 6 chars)">
-                <i class="fas fa-eye password-toggle" id="toggle-reg-password"></i>
-            </div>
-            <button class="login-btn" id="register-btn">Register</button>
-            <div class="register-link">
-                Already have an account? <a href="#" id="show-login">Login</a>
-            </div>
-        </div>
+        <div class="loading">Loading maps...</div>
     </main>
 
     <nav class="bottom-nav" id="bottom-nav">
@@ -832,6 +795,51 @@
                         <img src="" alt="Profile Picture" class="profile-pic">
                     </div>
                     <span class="uploader-name"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="login-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-login-modal" style="float: right; cursor: pointer; font-size: 24px;">&times;</span>
+            <h2>Login Required</h2>
+            <p>You need to login to upload maps.</p>
+            <div class="login-container" id="login-container">
+                <div class="error-message" id="login-error"></div>
+                <div class="login-input-group">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" placeholder="Enter your username">
+                </div>
+                <div class="login-input-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" placeholder="Enter your password">
+                    <i class="fas fa-eye password-toggle" id="toggle-password"></i>
+                    <div class="forgot-password">
+                        <a href="#" id="forgot-password-link">Forgot Password?</a>
+                    </div>
+                </div>
+                <button class="login-btn" id="login-btn">Login</button>
+                <div class="register-link">
+                    Don't have an account? <a href="#" id="show-register">Register</a>
+                </div>
+            </div>
+
+            <div class="login-container" id="register-container" style="display: none;">
+                <h2>Register</h2>
+                <div class="error-message" id="register-error"></div>
+                <div class="login-input-group">
+                    <label for="reg-username">Username</label>
+                    <input type="text" id="reg-username" placeholder="Choose a username">
+                </div>
+                <div class="login-input-group">
+                    <label for="reg-password">Password</label>
+                    <input type="password" id="reg-password" placeholder="Create a password (min 6 chars)">
+                    <i class="fas fa-eye password-toggle" id="toggle-reg-password"></i>
+                </div>
+                <button class="login-btn" id="register-btn">Register</button>
+                <div class="register-link">
+                    Already have an account? <a href="#" id="show-login">Login</a>
                 </div>
             </div>
         </div>
@@ -913,14 +921,6 @@
         const searchHeader = document.getElementById('search-header');
         const contentArea = document.getElementById('content-area');
         const bottomNav = document.getElementById('bottom-nav');
-        const loginContainer = document.getElementById('login-container');
-        const registerContainer = document.getElementById('register-container');
-        const loginBtn = document.getElementById('login-btn');
-        const registerBtn = document.getElementById('register-btn');
-        const showRegister = document.getElementById('show-register');
-        const showLogin = document.getElementById('show-login');
-        const loginError = document.getElementById('login-error');
-        const registerError = document.getElementById('register-error');
         const floatingUploadBtn = document.getElementById('floating-upload-btn');
         const uploadFormModal = document.getElementById('upload-form-modal');
         const closeModal = document.querySelector('.close-modal');
@@ -938,6 +938,12 @@
         const toggleRegPassword = document.getElementById('toggle-reg-password');
         const passwordInput = document.getElementById('password');
         const regPasswordInput = document.getElementById('reg-password');
+        const loginBtn = document.getElementById('login-btn');
+        const registerBtn = document.getElementById('register-btn');
+        const showRegister = document.getElementById('show-register');
+        const showLogin = document.getElementById('show-login');
+        const loginError = document.getElementById('login-error');
+        const registerError = document.getElementById('register-error');
         const forgotPasswordLink = document.getElementById('forgot-password-link');
         const recoveryModal = document.getElementById('recovery-modal');
         const closeRecovery = document.querySelector('.close-recovery');
@@ -947,6 +953,8 @@
         const confirmDeleteModal = document.getElementById('confirm-delete');
         const confirmDeleteYes = document.getElementById('confirm-delete-yes');
         const confirmDeleteNo = document.getElementById('confirm-delete-no');
+        const loginModal = document.getElementById('login-modal');
+        const closeLoginModal = document.querySelector('.close-login-modal');
 
         let currentUser = null;
         let thumbnailFile = null;
@@ -1011,29 +1019,18 @@
             if (loggedInUser) {
                 currentUser = JSON.parse(loggedInUser);
                 showAppContent();
-                loadHomepage();
-            } else {
-                showAuthForms();
             }
-        }
-
-        function showAuthForms() {
-            searchHeader.style.display = 'none';
-            bottomNav.style.display = 'none';
-            floatingUploadBtn.style.display = 'none';
-            loginContainer.style.display = 'block';
-            registerContainer.style.display = 'none';
-            contentArea.innerHTML = '';
-            contentArea.appendChild(loginContainer);
-            contentArea.appendChild(registerContainer);
+            loadHomepage();
         }
 
         function showAppContent() {
-            searchHeader.style.display = 'block';
             bottomNav.style.display = 'flex';
             floatingUploadBtn.style.display = 'flex';
-            loginContainer.style.display = 'none';
-            registerContainer.style.display = 'none';
+        }
+
+        function hideAppContent() {
+            bottomNav.style.display = 'none';
+            floatingUploadBtn.style.display = 'none';
         }
 
         function login(username, password) {
@@ -1065,7 +1062,8 @@
                     loginError.textContent = '';
                     showToast('Login successful!');
                     showAppContent();
-                    loadHomepage();
+                    loginModal.style.display = 'none';
+                    uploadFormModal.style.display = 'flex';
                 })
                 .catch(error => {
                     loginError.textContent = error.message;
@@ -1103,7 +1101,8 @@
                     currentUser = userData;
                     localStorage.setItem('currentUser', JSON.stringify(currentUser));
                     showAppContent();
-                    loadHomepage();
+                    loginModal.style.display = 'none';
+                    uploadFormModal.style.display = 'flex';
                 })
                 .catch(error => {
                     registerError.textContent = error.message;
@@ -1261,6 +1260,11 @@
         }
 
         function viewUserProfile(userId) {
+            if (!currentUser) {
+                showToast('Please login to view profiles');
+                return;
+            }
+            
             contentArea.innerHTML = '<div class="loading">Loading profile...</div>';
             
             database.ref('users/' + userId).once('value')
@@ -1308,7 +1312,8 @@
                         logoutBtn.addEventListener('click', () => {
                             currentUser = null;
                             localStorage.removeItem('currentUser');
-                            showAuthForms();
+                            hideAppContent();
+                            loadHomepage();
                         });
                     }
                     
@@ -1368,7 +1373,8 @@
             if (currentUser) {
                 viewUserProfile(currentUser.uid);
             } else {
-                showAuthForms();
+                showToast('Please login to view profile');
+                loginModal.style.display = 'flex';
             }
         }
 
@@ -1476,19 +1482,19 @@
             
             showRegister.addEventListener('click', (e) => {
                 e.preventDefault();
-                loginContainer.style.display = 'none';
-                registerContainer.style.display = 'block';
+                document.getElementById('login-container').style.display = 'none';
+                document.getElementById('register-container').style.display = 'block';
             });
             
             showLogin.addEventListener('click', (e) => {
                 e.preventDefault();
-                registerContainer.style.display = 'none';
-                loginContainer.style.display = 'block';
+                document.getElementById('register-container').style.display = 'none';
+                document.getElementById('login-container').style.display = 'block';
             });
             
             floatingUploadBtn.addEventListener('click', () => {
                 if (!currentUser) {
-                    showToast('Please login to upload maps');
+                    loginModal.style.display = 'flex';
                     return;
                 }
                 uploadFormModal.style.display = 'flex';
@@ -1496,6 +1502,10 @@
             
             closeModal.addEventListener('click', () => {
                 uploadFormModal.style.display = 'none';
+            });
+            
+            closeLoginModal.addEventListener('click', () => {
+                loginModal.style.display = 'none';
             });
             
             submitBtn.addEventListener('click', () => {
@@ -1543,6 +1553,9 @@
                 }
                 if (event.target === confirmDeleteModal) {
                     confirmDeleteModal.style.display = 'none';
+                }
+                if (event.target === loginModal) {
+                    loginModal.style.display = 'none';
                 }
             });
             
