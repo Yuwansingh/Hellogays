@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Free Fire Map Share</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600&display=swap" rel="stylesheet">
     <style>
         :root {
             --bg-color: #121212;
@@ -31,14 +32,127 @@
             flex-direction: column;
         }
         
+        /* Sidebar Styles */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: -240px;
+            width: 200px;
+            height: 100%;
+            background: #222;
+            z-index: 1000;
+            transition: left 0.3s ease;
+            padding: 20px 15px;
+        }
+        
+        .sidebar.active {
+            left: 0;
+        }
+        
+        .close-btn {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            font-size: 30px;
+            font-weight: bold;
+            color: white;
+            cursor: pointer;
+        }
+        
+        .profile-pic-sidebar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            margin: 60px auto 10px;
+            display: block;
+            object-fit: cover;
+        }
+        
+        .sidebar-title {
+            text-align: center;
+            font-weight: bold;
+            font-size: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .link-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 10px 0;
+            font-size: 16px;
+        }
+        
+        .link-row button {
+            background: #fff;
+            border: none;
+            color: black;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        
+        .link-row button:hover {
+            background: #008c9e;
+        }
+        
+        .brand-name {
+            text-align: center;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 24px;
+            color: #00fff7;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+        
+        .hamburger {
+            width: 30px;
+            cursor: pointer;
+            margin-right: 15px;
+        }
+        
+        .hamburger span {
+            height: 3px;
+            background: white;
+            display: block;
+            margin: 5px 0;
+        }
+
+        /* Header styles */
         .search-header {
             background-color: var(--card-color);
             padding: 15px;
             box-shadow: 0 2px 5px rgba(0,0,0,0.3);
-            display: block;
             position: sticky;
             top: 0;
             z-index: 10;
+        }
+        
+        .header-content {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+        }
+        
+        .header-top-row {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .profile-img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-right: 10px;
+        }
+        
+        .header-title {
+            font-size: 20px;
+            font-weight: bold;
+            margin-right: 15px;
+            white-space: nowrap;
         }
         
         .search-container {
@@ -47,6 +161,7 @@
             padding: 8px 15px;
             display: flex;
             align-items: center;
+            width: 100%;
         }
         
         .search-container i {
@@ -75,11 +190,16 @@
             background-color: var(--card-color);
             padding: 10px 0;
             box-shadow: 0 -2px 5px rgba(0,0,0,0.3);
-            justify-content: space-around;
             position: fixed;
             bottom: 0;
             width: 100%;
             z-index: 10;
+        }
+        
+        .bottom-nav-container {
+            display: flex;
+            justify-content: space-around;
+            width: 100%;
         }
         
         .bottom-nav button {
@@ -91,7 +211,7 @@
             flex-direction: column;
             align-items: center;
             cursor: pointer;
-            width: 50%;
+            width: 33.33%;
         }
         
         .bottom-nav button i {
@@ -808,24 +928,104 @@
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
+
+        .tab-container {
+            display: flex;
+            margin-bottom: 15px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .tab {
+            padding: 10px 15px;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+        }
+
+        .tab.active {
+            border-bottom: 2px solid var(--primary-color);
+            color: var(--primary-color);
+        }
+
+        .assets-warning {
+            background-color: #ffcc00;
+            color: #000;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            text-align: center;
+            display: none;
+        }
     </style>
 </head>
 <body>
 
+    <div class="sidebar" id="sidebar">
+        <div class="close-btn" onclick="toggleSidebar()">×</div>
+        <div class="brand-name">Craftland</div>
+        <img src="profile.jpg" class="profile-pic-sidebar" alt="Profile">
+        <div class="sidebar-title">CYBER PRITAM</div>
+
+        <div class="link-row">
+            <div>YouTube</div>
+            <button onclick="openLink('https://youtube.com/@cyber_pritam?si=DtAw8t1EYMN6lhY_')">Subscribe</button>
+        </div>
+
+        <div class="link-row">
+            <div>Telegram first</div>
+            <button onclick="openLink('https://t.me/C4_CraftX')">Follow</button>
+        </div>
+
+        <div class="link-row">
+            <div>Telegram second</div>
+            <button onclick="openLink('https://t.me/cyber_pritam22')">Follow</button>
+        </div>
+  
+        <div class="link-row">
+            <div>WhatsApp</div>
+            <button onclick="openLink('https://whatsapp.com/channel/0029Va9FYus7YSd9NcK37s0n')">Follow</button>
+        </div>
+        
+        <div class="link-row">
+            <div>Instagram</div>
+            <button onclick="openLink('https://www.instagram.com/cyber_pritam222')">Follow</button>
+        </div>
+    </div>
+
     <header class="search-header" id="search-header">
-        <div class="search-container">
-            <i class="fas fa-search"></i>
-            <input type="text" placeholder="Search maps..." id="search-input">
+        <div class="header-content">
+            <div class="header-top-row">
+                <div class="hamburger" onclick="toggleSidebar()">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+                <img src="profile.jpg" alt="Profile" class="profile-img">
+                <div class="header-title">CYBER PRITAM</div>
+            </div>
+            <div class="search-container">
+                <i class="fas fa-search"></i>
+                <input type="text" placeholder="Search maps..." id="search-input">
+            </div>
         </div>
     </header>
 
     <main class="content-area" id="content-area">
+        <div class="tab-container" id="tab-container">
+            <div class="tab active" id="home-tab">Home</div>
+            <div class="tab" id="assets-tab">Assets</div>
+        </div>
+        <div class="assets-warning" id="assets-warning">
+            Warning: Assets maps are different from home maps. Make sure you're in the right section before uploading.
+        </div>
         <div class="loading">Loading maps...</div>
     </main>
 
     <nav class="bottom-nav" id="bottom-nav">
-        <button id="home-btn"><i class="fas fa-home"></i> Home</button>
-        <button id="profile-btn"><i class="fas fa-user"></i> Profile</button>
+        <div class="bottom-nav-container">
+            <button id="home-btn"><i class="fas fa-home"></i> Home</button>
+            <button id="assets-btn"><i class="fas fa-upload"></i> Assets</button>
+            <button id="profile-btn"><i class="fas fa-user"></i> Profile</button>
+        </div>
     </nav>
 
     <div class="floating-btn" id="floating-upload-btn">
@@ -862,7 +1062,7 @@
     <div id="upload-form-modal" class="modal">
         <div class="modal-content">
             <span class="close-modal" style="float: right; cursor: pointer; font-size: 24px;">&times;</span>
-            <h2>Upload Map</h2>
+            <h2 id="upload-form-title">Upload Map</h2>
             <label for="thumbnail-upload" class="thumbnail-upload-label">
                 <i class="fas fa-image"></i> Tap to upload Thumbnail
                 <input type="file" id="thumbnail-upload" accept="image/*" style="display: none;">
@@ -1016,39 +1216,69 @@
                 </div>
                 <button class="logout-btn" id="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</button>
             </div>
-            <h3 style="margin-bottom: 15px;">Your Uploaded Maps</h3>
+            <div class="tab-container" id="profile-tab-container">
+                <div class="tab active" id="profile-home-tab">Home Maps</div>
+                <div class="tab" id="profile-assets-tab">Assets Maps</div>
+            </div>
             <div id="uploaded-maps-container">
                 <!-- User's uploaded maps will be inserted here -->
             </div>
         </div>
     </template>
-
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
     <script>
-        const firebaseConfig = {
-            databaseURL: "https://free-fire-craftaland-default-rtdb.firebaseio.com"
+        // Firebase configuration for Home maps
+        const assetsFirebaseConfig = {
+            apiKey: "AIzaSyAx1dokGsKM9QdWO61Be-pmDyvbDoAkiIk",
+            authDomain: "earn-world-c6fca-800063.firebaseapp.com",
+            databaseURL: "https://earn-world-c6fca-800063-default-rtdb.firebaseio.com",
+            projectId: "earn-world-c6fca-800063",
+            storageBucket: "earn-world-c6fca-800063.appspot.com",
+            messagingSenderId: "656863499063",
+            appId: "1:656863499063:web:a0795fd4eb81284f8ec0b2",
+            measurementId: "G-BWS50VZNS1"
         };
 
-        firebase.initializeApp(firebaseConfig);
-        const database = firebase.database();
+        // Firebase configuration for Assets maps
+        const homeFirebaseConfig = {
+            apiKey: "AIzaSyCbmTkXIUXHZh8649u0xW78x_eOuBHIA_o",
+            authDomain: "free-fire-craftaland.firebaseapp.com",
+            databaseURL: "https://free-fire-craftaland-default-rtdb.firebaseio.com",
+            projectId: "free-fire-craftaland",
+            storageBucket: "free-fire-craftaland.firebasestorage.app",
+            messagingSenderId: "358816944398",
+            appId: "1:358816944398:web:6693cf3111f3a5a605475f",
+            measurementId: "G-N2M3EFRREL"
+        };
+
+        // Initialize Firebase apps
+        const homeApp = firebase.initializeApp(homeFirebaseConfig, "homeApp");
+        const assetsApp = firebase.initializeApp(assetsFirebaseConfig, "assetsApp");
+
+        // Get database references
+        const homeDatabase = firebase.database(homeApp);
+        const assetsDatabase = firebase.database(assetsApp);
 
         const IMGBB_API_KEY = 'ac36a174ebd65fec02ea7f14ed716a20';
         const DEFAULT_THUMBNAIL = 'image.png';
         const DEFAULT_PROFILE_PIC = 'profile.png';
-        const BASE_URL = 'https://yuwansingh.github.io/Hellogays/';
+        const BASE_URL = window.location.href.split('?')[0];
 
+        // DOM elements
         const searchHeader = document.getElementById('search-header');
         const contentArea = document.getElementById('content-area');
         const bottomNav = document.getElementById('bottom-nav');
         const floatingUploadBtn = document.getElementById('floating-upload-btn');
         const uploadFormModal = document.getElementById('upload-form-modal');
+        const uploadFormTitle = document.getElementById('upload-form-title');
         const closeModal = document.querySelector('.close-modal');
         const submitBtn = document.getElementById('submit-btn');
         const submitLoader = document.getElementById('submit-loader');
         const thumbnailUpload = document.getElementById('thumbnail-upload');
         const thumbnailPreview = document.getElementById('thumbnail-preview');
         const homeBtn = document.getElementById('home-btn');
+        const assetsBtn = document.getElementById('assets-btn');
         const profileBtn = document.getElementById('profile-btn');
         const mapCardTemplate = document.getElementById('map-card-template');
         const profilePageTemplate = document.getElementById('profile-page-template');
@@ -1079,12 +1309,29 @@
         const shareLinkInput = document.getElementById('share-link-input');
         const closeShare = document.querySelector('.close-share');
         const shareDetailBtn = document.getElementById('share-detail-btn');
+        const sidebar = document.getElementById('sidebar');
+        const homeTab = document.getElementById('home-tab');
+        const assetsTab = document.getElementById('assets-tab');
+        const tabContainer = document.getElementById('tab-container');
+        const assetsWarning = document.getElementById('assets-warning');
 
         let currentUser = null;
         let thumbnailFile = null;
         let mapToDelete = null;
         let currentMapToShare = null;
-        let cameFromSharedLink = false;
+        let currentDatabase = homeDatabase; // Default to home database
+        let currentTab = 'home'; // 'home' or 'assets'
+        let currentProfileTab = 'home'; // For profile page
+
+        // Toggle sidebar function
+        function toggleSidebar() {
+            sidebar.classList.toggle('active');
+        }
+
+        // Open external link
+        function openLink(url) {
+            window.open(url, '_blank');
+        }
 
         function showToast(message, duration = 3000) {
             const toast = document.getElementById('toast');
@@ -1146,16 +1393,30 @@
             const mapId = urlParams.get('map');
             
             if (mapId) {
-                cameFromSharedLink = true;
                 // If there's a map ID in the URL, show that map directly
-                database.ref('maps/' + mapId).once('value')
+                // First try home database
+                homeDatabase.ref('maps/' + mapId).once('value')
                     .then(snapshot => {
                         const mapData = snapshot.val();
                         if (mapData) {
                             showMapDetail({ id: mapId, ...mapData });
-                        } else {
-                            loadHomepage();
+                            return;
                         }
+                        
+                        // If not found in home, try assets database
+                        return assetsDatabase.ref('maps/' + mapId).once('value');
+                    })
+                    .then(snapshot => {
+                        if (snapshot) {
+                            const mapData = snapshot.val();
+                            if (mapData) {
+                                showMapDetail({ id: mapId, ...mapData });
+                                return;
+                            }
+                        }
+                        
+                        // If not found in either database
+                        loadHomepage();
                     })
                     .catch(() => {
                         loadHomepage();
@@ -1165,8 +1426,19 @@
                 const loggedInUser = localStorage.getItem('currentUser');
                 if (loggedInUser) {
                     currentUser = JSON.parse(loggedInUser);
-                    showAppContent();
                 }
+                
+                // Always show bottom nav and floating upload button
+                bottomNav.style.display = 'flex';
+                floatingUploadBtn.style.display = 'flex';
+                
+                // Hide profile button if not logged in
+                if (currentUser) {
+                    profileBtn.style.display = 'flex';
+                } else {
+                    profileBtn.style.display = 'none';
+                }
+                
                 loadHomepage();
             }
         }
@@ -1174,15 +1446,23 @@
         function showAppContent() {
             bottomNav.style.display = 'flex';
             floatingUploadBtn.style.display = 'flex';
+            
+            if (currentUser) {
+                profileBtn.style.display = 'flex';
+            } else {
+                profileBtn.style.display = 'none';
+            }
         }
 
         function hideAppContent() {
-            bottomNav.style.display = 'none';
-            floatingUploadBtn.style.display = 'none';
+            bottomNav.style.display = 'flex';
+            floatingUploadBtn.style.display = 'flex';
+            profileBtn.style.display = 'none';
         }
 
         function login(username, password) {
-            database.ref('users').orderByChild('username').equalTo(username).once('value')
+            // We'll use home database for user authentication
+            homeDatabase.ref('users').orderByChild('username').equalTo(username).once('value')
                 .then(snapshot => {
                     const users = snapshot.val();
                     if (!users) {
@@ -1211,7 +1491,11 @@
                     showToast('Login successful!');
                     showAppContent();
                     loginModal.style.display = 'none';
-                    uploadFormModal.style.display = 'flex';
+                    
+                    // Show the upload form if it was triggered
+                    if (uploadFormModal.style.display === 'flex') {
+                        showUploadForm();
+                    }
                 })
                 .catch(error => {
                     loginError.textContent = error.message;
@@ -1219,13 +1503,14 @@
         }
 
         function register(username, password) {
-            database.ref('usernames').once('value')
+            // We'll use home database for user registration
+            homeDatabase.ref('usernames').once('value')
                 .then(snapshot => {
                     if (snapshot.hasChild(username)) {
                         throw new Error('Username already exists');
                     }
                     
-                    const newUserRef = database.ref('users').push();
+                    const newUserRef = homeDatabase.ref('users').push();
                     const userId = newUserRef.key;
                     
                     return newUserRef.set({
@@ -1234,7 +1519,7 @@
                         profilePic: DEFAULT_PROFILE_PIC,
                         createdAt: firebase.database.ServerValue.TIMESTAMP
                     }).then(() => {
-                        return database.ref('usernames/' + username).set(true);
+                        return homeDatabase.ref('usernames/' + username).set(true);
                     }).then(() => {
                         return {
                             uid: userId,
@@ -1250,7 +1535,11 @@
                     localStorage.setItem('currentUser', JSON.stringify(currentUser));
                     showAppContent();
                     loginModal.style.display = 'none';
-                    uploadFormModal.style.display = 'flex';
+                    
+                    // Show the upload form if it was triggered
+                    if (uploadFormModal.style.display === 'flex') {
+                        showUploadForm();
+                    }
                 })
                 .catch(error => {
                     registerError.textContent = error.message;
@@ -1261,13 +1550,14 @@
             recoveryError.textContent = '';
             recoveryResult.style.display = 'none';
             
-            database.ref('usernames/' + username).once('value')
+            // We'll use home database for password recovery
+            homeDatabase.ref('usernames/' + username).once('value')
                 .then(snapshot => {
                     if (!snapshot.exists()) {
                         throw new Error('Username not found');
                     }
                     
-                    return database.ref('users').orderByChild('username').equalTo(username).once('value');
+                    return homeDatabase.ref('users').orderByChild('username').equalTo(username).once('value');
                 })
                 .then(snapshot => {
                     const users = snapshot.val();
@@ -1287,12 +1577,34 @@
         }
 
         function loadHomepage() {
-            // Remove the map parameter from URL if we're coming from a shared link
-            if (cameFromSharedLink) {
-                window.history.pushState({}, document.title, window.location.pathname);
-                cameFromSharedLink = false;
-            }
+            currentTab = 'home';
+            currentDatabase = homeDatabase;
+            updateTabUI();
+            loadMaps(currentDatabase);
+        }
+
+        function loadAssetsPage() {
+            currentTab = 'assets';
+            currentDatabase = assetsDatabase;
+            updateTabUI();
+            loadMaps(currentDatabase);
+        }
+
+        function updateTabUI() {
+            // Update main content tabs
+            homeTab.classList.toggle('active', currentTab === 'home');
+            assetsTab.classList.toggle('active', currentTab === 'assets');
+            assetsWarning.style.display = currentTab === 'assets' ? 'block' : 'none';
             
+            // Update bottom nav buttons
+            homeBtn.style.color = currentTab === 'home' ? 'var(--primary-color)' : '#777';
+            assetsBtn.style.color = currentTab === 'assets' ? 'var(--primary-color)' : '#777';
+            
+            // Update upload form title
+            uploadFormTitle.textContent = currentTab === 'home' ? 'Upload Home Map' : 'Upload Assets Map';
+        }
+
+        function loadMaps(database) {
             contentArea.innerHTML = '<div class="loading">Loading maps...</div>';
             
             database.ref('maps').once('value')
@@ -1339,7 +1651,7 @@
                             });
                             
                             const uploaderInfo = card.querySelector('.uploader-info');
-                            database.ref('users/' + mapData.uploaderId).once('value')
+                            homeDatabase.ref('users/' + mapData.uploaderId).once('value')
                                 .then(userSnapshot => {
                                     const user = userSnapshot.val();
                                     if (user) {
@@ -1372,11 +1684,20 @@
         function deleteMap() {
             if (!mapToDelete || !currentUser) return;
             
+            // Determine which database to use based on current tab
+            const database = currentTab === 'home' ? homeDatabase : assetsDatabase;
+            
             database.ref('maps/' + mapToDelete.id).remove()
                 .then(() => {
                     showToast('Map deleted successfully!');
                     confirmDeleteModal.style.display = 'none';
-                    loadHomepage();
+                    
+                    // Reload the current view
+                    if (currentTab === 'home') {
+                        loadHomepage();
+                    } else if (currentTab === 'assets') {
+                        loadAssetsPage();
+                    }
                 })
                 .catch(error => {
                     showToast('Error deleting map: ' + error.message);
@@ -1398,7 +1719,7 @@
             document.getElementById('detail-description').textContent = mapData.description || 'No description provided.';
             
             const uploaderInfo = document.getElementById('detail-uploader');
-            database.ref('users/' + mapData.uploaderId).once('value')
+            homeDatabase.ref('users/' + mapData.uploaderId).once('value')
                 .then(userSnapshot => {
                     const user = userSnapshot.val();
                     if (user) {
@@ -1459,7 +1780,7 @@
             
             contentArea.innerHTML = '<div class="loading">Loading profile...</div>';
             
-            database.ref('users/' + userId).once('value')
+            homeDatabase.ref('users/' + userId).once('value')
                 .then(userSnapshot => {
                     const userData = userSnapshot.val();
                     
@@ -1479,7 +1800,7 @@
                                     showToast('Uploading profile picture...');
                                     const imageUrl = await uploadImageToImgBB(file);
                                     
-                                    await database.ref('users/' + userId).update({
+                                    await homeDatabase.ref('users/' + userId).update({
                                         profilePic: imageUrl
                                     });
                                     
@@ -1510,60 +1831,88 @@
                     }
                     
                     const uploadedMapsContainer = profilePage.getElementById('uploaded-maps-container');
+                    const profileTabContainer = profilePage.getElementById('profile-tab-container');
+                    const profileHomeTab = profilePage.getElementById('profile-home-tab');
+                    const profileAssetsTab = profilePage.getElementById('profile-assets-tab');
                     
-                    database.ref('maps').orderByChild('uploaderId').equalTo(userId).once('value')
-                        .then(mapsSnapshot => {
-                            const userMaps = mapsSnapshot.val();
-                            
-                            if (userMaps) {
-                                let mapsArray = Object.entries(userMaps).map(([id, map]) => ({ id, ...map }));
-                                mapsArray.reverse();
-                                
-                                mapsArray.forEach(mapData => {
-                                    const card = mapCardTemplate.content.cloneNode(true);
-                                    card.querySelector('.map-thumbnail').src = mapData.thumbnail || DEFAULT_THUMBNAIL;
-                                    card.querySelector('.map-title').textContent = mapData.title;
-                                    card.querySelector('.map-code').textContent = mapData.code;
-                                    
-                                    const deleteBtn = card.querySelector('.delete-btn');
-                                    if (currentUser && mapData.uploaderId === currentUser.uid) {
-                                        deleteBtn.style.display = 'flex';
-                                        deleteBtn.addEventListener('click', (e) => {
-                                            e.stopPropagation();
-                                            showDeleteConfirmation(mapData);
-                                        });
-                                    } else {
-                                        deleteBtn.style.display = 'none';
-                                    }
-                                    
-                                    const copyButton = card.querySelector('.copy-btn');
-                                    copyButton.addEventListener('click', (e) => {
-                                        e.stopPropagation();
-                                        navigator.clipboard.writeText(mapData.code);
-                                        showToast(`Map code "${mapData.code}" copied!`);
-                                    });
-
-                                    const shareButton = card.querySelector('.share-btn');
-                                    shareButton.addEventListener('click', (e) => {
-                                        e.stopPropagation();
-                                        showShareModal(mapData);
-                                    });
-                                    
-                                    card.querySelector('.map-card').addEventListener('click', () => {
-                                        showMapDetail(mapData);
-                                    });
-                                    
-                                    card.querySelector('.uploader-info').style.display = 'none';
-                                    
-                                    uploadedMapsContainer.appendChild(card);
-                                });
-                            } else {
-                                uploadedMapsContainer.innerHTML = '<p>No maps uploaded yet.</p>';
-                            }
-                        });
+                    // Set up profile tabs
+                    profileHomeTab.addEventListener('click', () => {
+                        currentProfileTab = 'home';
+                        profileHomeTab.classList.add('active');
+                        profileAssetsTab.classList.remove('active');
+                        loadUserMaps(userId, homeDatabase, uploadedMapsContainer);
+                    });
+                    
+                    profileAssetsTab.addEventListener('click', () => {
+                        currentProfileTab = 'assets';
+                        profileHomeTab.classList.remove('active');
+                        profileAssetsTab.classList.add('active');
+                        loadUserMaps(userId, assetsDatabase, uploadedMapsContainer);
+                    });
+                    
+                    // Load home maps by default
+                    currentProfileTab = 'home';
+                    profileHomeTab.classList.add('active');
+                    loadUserMaps(userId, homeDatabase, uploadedMapsContainer);
                     
                     contentArea.innerHTML = '';
                     contentArea.appendChild(profilePage);
+                });
+        }
+
+        function loadUserMaps(userId, database, container) {
+            container.innerHTML = '<div class="loading">Loading maps...</div>';
+            
+            database.ref('maps').orderByChild('uploaderId').equalTo(userId).once('value')
+                .then(mapsSnapshot => {
+                    const userMaps = mapsSnapshot.val();
+                    container.innerHTML = '';
+                    
+                    if (userMaps) {
+                        let mapsArray = Object.entries(userMaps).map(([id, map]) => ({ id, ...map }));
+                        mapsArray.reverse();
+                        
+                        mapsArray.forEach(mapData => {
+                            const card = mapCardTemplate.content.cloneNode(true);
+                            card.querySelector('.map-thumbnail').src = mapData.thumbnail || DEFAULT_THUMBNAIL;
+                            card.querySelector('.map-title').textContent = mapData.title;
+                            card.querySelector('.map-code').textContent = mapData.code;
+                            
+                            const deleteBtn = card.querySelector('.delete-btn');
+                            if (currentUser && mapData.uploaderId === currentUser.uid) {
+                                deleteBtn.style.display = 'flex';
+                                deleteBtn.addEventListener('click', (e) => {
+                                    e.stopPropagation();
+                                    showDeleteConfirmation(mapData);
+                                });
+                            } else {
+                                deleteBtn.style.display = 'none';
+                            }
+                            
+                            const copyButton = card.querySelector('.copy-btn');
+                            copyButton.addEventListener('click', (e) => {
+                                e.stopPropagation();
+                                navigator.clipboard.writeText(mapData.code);
+                                showToast(`Map code "${mapData.code}" copied!`);
+                            });
+
+                            const shareButton = card.querySelector('.share-btn');
+                            shareButton.addEventListener('click', (e) => {
+                                e.stopPropagation();
+                                showShareModal(mapData);
+                            });
+                            
+                            card.querySelector('.map-card').addEventListener('click', () => {
+                                showMapDetail(mapData);
+                            });
+                            
+                            card.querySelector('.uploader-info').style.display = 'none';
+                            
+                            container.appendChild(card);
+                        });
+                    } else {
+                        container.innerHTML = '<p>No maps uploaded yet.</p>';
+                    }
                 });
         }
 
@@ -1576,6 +1925,17 @@
             }
         }
 
+        function showUploadForm() {
+            if (!currentUser) {
+                loginModal.style.display = 'flex';
+                uploadFormModal.style.display = 'none';
+                return;
+            }
+            
+            uploadFormTitle.textContent = currentTab === 'home' ? 'Upload Home Map' : 'Upload Assets Map';
+            uploadFormModal.style.display = 'flex';
+        }
+
         async function uploadMap(title, code, youtubeUrl, description) {
             if (!title || !code) {
                 showToast('Please fill in all required fields');
@@ -1584,6 +1944,18 @@
             
             if (!currentUser) {
                 showToast('Please login to upload maps');
+                return;
+            }
+            
+            // Check if the map code starts with "assets" when uploading to home
+            if (currentTab === 'home' && code.toLowerCase().startsWith('assets')) {
+                showToast('Error: Assets maps cannot be uploaded to home section');
+                return;
+            }
+            
+            // Check if the map code doesn't start with "assets" when uploading to assets
+            if (currentTab === 'assets' && !code.toLowerCase().startsWith('assets')) {
+                showToast('Error: Only assets maps can be uploaded to assets section');
                 return;
             }
             
@@ -1608,6 +1980,8 @@
                     thumbnail: thumbnailUrl
                 };
                 
+                // Use the appropriate database based on current tab
+                const database = currentTab === 'home' ? homeDatabase : assetsDatabase;
                 const newMapRef = database.ref('maps').push();
                 await newMapRef.set(mapData);
                 
@@ -1623,7 +1997,13 @@
                 thumbnailFile = null;
                 
                 showToast('Map uploaded successfully!');
-                loadHomepage();
+                
+                // Reload the current view
+                if (currentTab === 'home') {
+                    loadHomepage();
+                } else if (currentTab === 'assets') {
+                    loadAssetsPage();
+                }
             } catch (error) {
                 submitLoader.style.display = 'none';
                 submitBtn.disabled = false;
@@ -1690,13 +2070,15 @@
                 document.getElementById('login-container').style.display = 'block';
             });
             
-            floatingUploadBtn.addEventListener('click', () => {
-                if (!currentUser) {
-                    loginModal.style.display = 'flex';
-                    return;
-                }
-                uploadFormModal.style.display = 'flex';
-            });
+            floatingUploadBtn.addEventListener('click', showUploadForm);
+            
+            homeBtn.addEventListener('click', loadHomepage);
+            assetsBtn.addEventListener('click', loadAssetsPage);
+            profileBtn.addEventListener('click', loadProfilePage);
+            
+            // Set up content tabs
+            homeTab.addEventListener('click', loadHomepage);
+            assetsTab.addEventListener('click', loadAssetsPage);
             
             closeModal.addEventListener('click', () => {
                 uploadFormModal.style.display = 'none';
@@ -1736,15 +2118,8 @@
                 }
             });
             
-            homeBtn.addEventListener('click', loadHomepage);
-            profileBtn.addEventListener('click', loadProfilePage);
-            
             closeDetail.addEventListener('click', () => {
                 mapDetailModal.style.display = 'none';
-                // If we came from a shared link, load homepage after closing
-                if (cameFromSharedLink) {
-                    loadHomepage();
-                }
             });
             
             window.addEventListener('click', (event) => {
@@ -1753,10 +2128,6 @@
                 }
                 if (event.target === mapDetailModal) {
                     mapDetailModal.style.display = 'none';
-                    // If we came from a shared link, load homepage after closing
-                    if (cameFromSharedLink) {
-                        loadHomepage();
-                    }
                 }
                 if (event.target === recoveryModal) {
                     recoveryModal.style.display = 'none';
@@ -1769,6 +2140,9 @@
                 }
                 if (event.target === shareModal) {
                     shareModal.style.display = 'none';
+                }
+                if (event.target === sidebar) {
+                    sidebar.classList.remove('active');
                 }
             });
             
