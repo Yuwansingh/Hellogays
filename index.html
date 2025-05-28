@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Free Fire Map Share</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600&display=swap" rel="stylesheet">
     <style>
         :root {
             --bg-color: #121212;
@@ -15,6 +14,7 @@
             --secondary-color: #ff4a4a;
             --input-bg: #2d2d2d;
             --border-color: #333;
+            --assets-color: #4CAF50;
         }
         
         * {
@@ -32,85 +32,19 @@
             flex-direction: column;
         }
         
-        /* Sidebar Styles */
-        .sidebar {
-            position: fixed;
-            top: 0;
-            left: -240px;
-            width: 200px;
-            height: 100%;
-            background: #222;
-            z-index: 1000;
-            transition: left 0.3s ease;
-            padding: 20px 15px;
-        }
-        
-        .sidebar.active {
-            left: 0;
-        }
-        
-        .close-btn {
-            position: absolute;
-            top: 10px;
-            right: 15px;
-            font-size: 30px;
-            font-weight: bold;
-            color: white;
-            cursor: pointer;
-        }
-        
-        .profile-pic-sidebar {
-            width: 100px;
-            height: 100px;
-            border-radius: 50%;
-            margin: 60px auto 10px;
-            display: block;
-            object-fit: cover;
-        }
-        
-        .sidebar-title {
-            text-align: center;
-            font-weight: bold;
-            font-size: 20px;
-            margin-bottom: 30px;
-        }
-        
-        .link-row {
+        .topbar {
+            background: #1f1f1f;
+            padding: 10px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin: 10px 0;
-            font-size: 16px;
         }
-        
-        .link-row button {
-            background: #fff;
-            border: none;
-            color: black;
-            padding: 5px 10px;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-        
-        .link-row button:hover {
-            background: #008c9e;
-        }
-        
-        .brand-name {
-            text-align: center;
-            font-family: 'Orbitron', sans-serif;
-            font-size: 24px;
-            color: #00fff7;
-            margin-top: 20px;
-            margin-bottom: 10px;
-        }
-        
+
         .hamburger {
             width: 30px;
             cursor: pointer;
-            margin-right: 15px;
         }
-        
+
         .hamburger span {
             height: 3px;
             background: white;
@@ -118,11 +52,85 @@
             margin: 5px 0;
         }
 
-        /* Header styles */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: -250px;
+            width: 250px;
+            height: 100%;
+            background: #222;
+            z-index: 1000;
+            transition: left 0.3s ease;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .sidebar.active {
+            left: 0;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            font-size: 24px;
+            color: white;
+            cursor: pointer;
+        }
+
+        .brand-name {
+            text-align: center;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 24px;
+            color: #00fff7;
+            margin: 20px 0;
+        }
+        
+        .profile-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .profile-pic-side {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-bottom: 10px;
+        }
+        
+        .profile-name {
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .link-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 15px 0;
+            font-size: 16px;
+            padding: 10px;
+            background: #333;
+            border-radius: 8px;
+        }
+
+        .link-row button {
+            background: #4a6bff;
+            border: none;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        
         .search-header {
             background-color: var(--card-color);
-            padding: 15px;
+            padding: 10px 15px;
             box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+            display: block;
             position: sticky;
             top: 0;
             z-index: 10;
@@ -130,29 +138,21 @@
         
         .header-content {
             display: flex;
-            flex-direction: column;
-            width: 100%;
+            align-items: center;
+            justify-content: space-between;
         }
         
-        .header-top-row {
+        .header-profile {
             display: flex;
             align-items: center;
-            margin-bottom: 10px;
         }
         
-        .profile-img {
+        .header-profile-pic {
             width: 40px;
             height: 40px;
             border-radius: 50%;
             object-fit: cover;
-            margin-right: 10px;
-        }
-        
-        .header-title {
-            font-size: 20px;
-            font-weight: bold;
-            margin-right: 15px;
-            white-space: nowrap;
+            margin-left: 10px;
         }
         
         .search-container {
@@ -161,7 +161,7 @@
             padding: 8px 15px;
             display: flex;
             align-items: center;
-            width: 100%;
+            margin-top: 10px;
         }
         
         .search-container i {
@@ -186,7 +186,7 @@
         }
         
         .bottom-nav {
-            display: none;
+            display: flex;
             background-color: var(--card-color);
             padding: 10px 0;
             box-shadow: 0 -2px 5px rgba(0,0,0,0.3);
@@ -205,18 +205,27 @@
         .bottom-nav button {
             background: none;
             border: none;
-            color: var(--primary-color);
+            color: var(--text-color);
             font-size: 14px;
             display: flex;
             flex-direction: column;
             align-items: center;
             cursor: pointer;
-            width: 33.33%;
+            width: 100%;
+            padding: 5px 0;
         }
         
         .bottom-nav button i {
             font-size: 20px;
             margin-bottom: 5px;
+        }
+        
+        .bottom-nav button.active {
+            color: var(--primary-color);
+        }
+        
+        .bottom-nav button.assets-active {
+            color: var(--assets-color);
         }
         
         .modal {
@@ -248,6 +257,10 @@
             color: var(--primary-color);
         }
         
+        .assets-modal-content h2 {
+            color: var(--assets-color);
+        }
+        
         .thumbnail-upload-label {
             display: block;
             border: 2px dashed var(--border-color);
@@ -264,6 +277,10 @@
             color: var(--primary-color);
             display: block;
             margin-bottom: 10px;
+        }
+        
+        .assets-thumbnail-upload-label i {
+            color: var(--assets-color);
         }
         
         .input-group {
@@ -312,6 +329,10 @@
             cursor: pointer;
         }
         
+        .assets-copy-btn {
+            background-color: var(--assets-color);
+        }
+        
         #submit-btn {
             background-color: var(--primary-color);
             color: white;
@@ -322,6 +343,10 @@
             width: 100%;
             cursor: pointer;
             margin-top: 10px;
+        }
+        
+        #assets-submit-btn {
+            background-color: var(--assets-color);
         }
         
         .loading {
@@ -378,6 +403,10 @@
             align-items: center;
             justify-content: center;
             gap: 8px;
+        }
+        
+        .assets-copy-btn {
+            background-color: var(--assets-color);
         }
         
         .youtube-link {
@@ -484,6 +513,10 @@
             align-items: center;
             justify-content: center;
             gap: 8px;
+        }
+        
+        .assets-detail-copy-btn {
+            background-color: var(--assets-color);
         }
         
         .map-detail-description {
@@ -636,6 +669,10 @@
             gap: 8px;
         }
         
+        .assets-toast {
+            background-color: var(--assets-color);
+        }
+        
         .toast.show {
             opacity: 1;
         }
@@ -731,9 +768,20 @@
             transition: all 0.3s;
         }
 
+        .assets-floating-btn {
+            background-color: var(--assets-color);
+        }
+
         .floating-btn:hover {
             transform: scale(1.1);
+        }
+
+        .primary-floating-btn:hover {
             background-color: #3a5bef;
+        }
+
+        .assets-floating-btn:hover {
+            background-color: #3e8e41;
         }
 
         .delete-btn {
@@ -816,6 +864,10 @@
             font-size: 24px;
             color: var(--primary-color);
             animation: spin 1s linear infinite;
+        }
+
+        .assets-submit-loader i {
+            color: var(--assets-color);
         }
 
         .share-btn {
@@ -924,46 +976,65 @@
             cursor: pointer;
         }
 
+        .database-selector {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 15px;
+            gap: 10px;
+        }
+
+        .database-selector button {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .database-selector button.active {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .assets-database-selector button.active {
+            background-color: var(--assets-color);
+        }
+
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
-        }
-
-        .tab-container {
-            display: flex;
-            margin-bottom: 15px;
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        .tab {
-            padding: 10px 15px;
-            cursor: pointer;
-            border-bottom: 2px solid transparent;
-        }
-
-        .tab.active {
-            border-bottom: 2px solid var(--primary-color);
-            color: var(--primary-color);
-        }
-
-        .assets-warning {
-            background-color: #ffcc00;
-            color: #000;
-            padding: 10px;
-            border-radius: 5px;
-            margin-bottom: 15px;
-            text-align: center;
-            display: none;
         }
     </style>
 </head>
 <body>
 
+    <header class="search-header" id="search-header">
+        <div class="header-content">
+            <div class="hamburger" onclick="toggleSidebar()">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+            <div class="header-profile">
+                <div>CYBER PRITAM</div>
+                <img src="profile.jpg" class="header-profile-pic" alt="Profile">
+            </div>
+        </div>
+        
+        <div class="search-container">
+            <i class="fas fa-search"></i>
+            <input type="text" placeholder="Search maps..." id="search-input">
+        </div>
+    </header>
+
     <div class="sidebar" id="sidebar">
         <div class="close-btn" onclick="toggleSidebar()">×</div>
         <div class="brand-name">Craftland</div>
-        <img src="profile.jpg" class="profile-pic-sidebar" alt="Profile">
-        <div class="sidebar-title">CYBER PRITAM</div>
+        
+        <div class="profile-section">
+            <img src="profile.jpg" class="profile-pic-side" alt="Profile">
+            <div class="profile-name">CYBER PRITAM</div>
+        </div>
 
         <div class="link-row">
             <div>YouTube</div>
@@ -971,59 +1042,34 @@
         </div>
 
         <div class="link-row">
-            <div>Telegram first</div>
-            <button onclick="openLink('https://t.me/C4_CraftX')">Follow</button>
+            <div>Instagram</div>
+            <button onclick="openLink('https://www.instagram.com/cyber_pritam222')">Follow</button>
         </div>
 
+        <div class="link-row">
+            <div>Telegram fast</div>
+            <button onclick="openLink('https://t.me/C4_CraftX')">Follow</button>
+        </div>
+        
         <div class="link-row">
             <div>Telegram second</div>
             <button onclick="openLink('https://t.me/cyber_pritam22')">Follow</button>
         </div>
-  
+        
         <div class="link-row">
             <div>WhatsApp</div>
             <button onclick="openLink('https://whatsapp.com/channel/0029Va9FYus7YSd9NcK37s0n')">Follow</button>
         </div>
-        
-        <div class="link-row">
-            <div>Instagram</div>
-            <button onclick="openLink('https://www.instagram.com/cyber_pritam222')">Follow</button>
-        </div>
     </div>
 
-    <header class="search-header" id="search-header">
-        <div class="header-content">
-            <div class="header-top-row">
-                <div class="hamburger" onclick="toggleSidebar()">
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                </div>
-                <img src="profile.jpg" alt="Profile" class="profile-img">
-                <div class="header-title">CYBER PRITAM</div>
-            </div>
-            <div class="search-container">
-                <i class="fas fa-search"></i>
-                <input type="text" placeholder="Search maps..." id="search-input">
-            </div>
-        </div>
-    </header>
-
     <main class="content-area" id="content-area">
-        <div class="tab-container" id="tab-container">
-            <div class="tab active" id="home-tab">Home</div>
-            <div class="tab" id="assets-tab">Assets</div>
-        </div>
-        <div class="assets-warning" id="assets-warning">
-            Warning: Assets maps are different from home maps. Make sure you're in the right section before uploading.
-        </div>
         <div class="loading">Loading maps...</div>
     </main>
 
     <nav class="bottom-nav" id="bottom-nav">
         <div class="bottom-nav-container">
             <button id="home-btn"><i class="fas fa-home"></i> Home</button>
-            <button id="assets-btn"><i class="fas fa-upload"></i> Assets</button>
+            <button id="assets-btn"><i class="fas fa-coins"></i> Assets</button>
             <button id="profile-btn"><i class="fas fa-user"></i> Profile</button>
         </div>
     </nav>
@@ -1059,10 +1105,11 @@
         </div>
     </div>
 
+    <!-- Primary Database Upload Form -->
     <div id="upload-form-modal" class="modal">
         <div class="modal-content">
             <span class="close-modal" style="float: right; cursor: pointer; font-size: 24px;">&times;</span>
-            <h2 id="upload-form-title">Upload Map</h2>
+            <h2>Upload Map</h2>
             <label for="thumbnail-upload" class="thumbnail-upload-label">
                 <i class="fas fa-image"></i> Tap to upload Thumbnail
                 <input type="file" id="thumbnail-upload" accept="image/*" style="display: none;">
@@ -1089,6 +1136,42 @@
             </div>
             <button id="submit-btn">Submit</button>
             <div id="submit-loader" class="submit-loader">
+                <i class="fas fa-spinner"></i> Uploading map...
+            </div>
+        </div>
+    </div>
+
+    <!-- Assets Database Upload Form -->
+    <div id="assets-upload-form-modal" class="modal">
+        <div class="modal-content assets-modal-content">
+            <span class="close-assets-modal" style="float: right; cursor: pointer; font-size: 24px;">&times;</span>
+            <h2>Upload Assets Map</h2>
+            <label for="assets-thumbnail-upload" class="thumbnail-upload-label assets-thumbnail-upload-label">
+                <i class="fas fa-image"></i> Tap to upload Thumbnail
+                <input type="file" id="assets-thumbnail-upload" accept="image/*" style="display: none;">
+                <img id="assets-thumbnail-preview" src="#" alt="Thumbnail Preview" style="display: none; max-width: 100%; height: auto;">
+            </label>
+            <div class="input-group">
+                <label for="assets-map-title">Map Title:</label>
+                <input type="text" id="assets-map-title" placeholder="Enter map title">
+            </div>
+            <div class="input-group">
+                <label for="assets-map-code">Map Code:</label>
+                <div class="code-input-container">
+                    <input type="text" id="assets-map-code" placeholder="Enter map code">
+                    <button class="copy-btn assets-copy-btn" onclick="copyAssetsMapCode()"><i class="fas fa-copy"></i></button>
+                </div>
+            </div>
+            <div class="input-group">
+                <label for="assets-youtube-url">YouTube URL:</label>
+                <input type="url" id="assets-youtube-url" placeholder="Enter YouTube URL (optional)">
+            </div>
+            <div class="input-group">
+                <label for="assets-description">Description:</label>
+                <textarea id="assets-description" placeholder="Enter map description"></textarea>
+            </div>
+            <button id="assets-submit-btn" class="assets-submit-btn">Submit</button>
+            <div id="assets-submit-loader" class="submit-loader assets-submit-loader">
                 <i class="fas fa-spinner"></i> Uploading map...
             </div>
         </div>
@@ -1216,20 +1299,23 @@
                 </div>
                 <button class="logout-btn" id="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</button>
             </div>
-            <div class="tab-container" id="profile-tab-container">
-                <div class="tab active" id="profile-home-tab">Home Maps</div>
-                <div class="tab" id="profile-assets-tab">Assets Maps</div>
-            </div>
+            <h3 style="margin-bottom: 15px;">Your Uploaded Maps</h3>
             <div id="uploaded-maps-container">
                 <!-- User's uploaded maps will be inserted here -->
             </div>
         </div>
     </template>
+
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
     <script>
-        // Firebase configuration for Home maps
-        const assetsFirebaseConfig = {
+        // Primary Firebase Configuration
+        const primaryFirebaseConfig = {
+            databaseURL: "https://free-fire-craftaland-default-rtdb.firebaseio.com"
+        };
+
+        // Secondary Firebase Configuration
+        const secondaryFirebaseConfig = {
             apiKey: "AIzaSyAx1dokGsKM9QdWO61Be-pmDyvbDoAkiIk",
             authDomain: "earn-world-c6fca-800063.firebaseapp.com",
             databaseURL: "https://earn-world-c6fca-800063-default-rtdb.firebaseio.com",
@@ -1240,43 +1326,35 @@
             measurementId: "G-BWS50VZNS1"
         };
 
-        // Firebase configuration for Assets maps
-        const homeFirebaseConfig = {
-            apiKey: "AIzaSyCbmTkXIUXHZh8649u0xW78x_eOuBHIA_o",
-            authDomain: "free-fire-craftaland.firebaseapp.com",
-            databaseURL: "https://free-fire-craftaland-default-rtdb.firebaseio.com",
-            projectId: "free-fire-craftaland",
-            storageBucket: "free-fire-craftaland.firebasestorage.app",
-            messagingSenderId: "358816944398",
-            appId: "1:358816944398:web:6693cf3111f3a5a605475f",
-            measurementId: "G-N2M3EFRREL"
-        };
+        // Initialize both Firebase apps
+        const primaryApp = firebase.initializeApp(primaryFirebaseConfig, "primary");
+        const secondaryApp = firebase.initializeApp(secondaryFirebaseConfig, "secondary");
 
-        // Initialize Firebase apps
-        const homeApp = firebase.initializeApp(homeFirebaseConfig, "homeApp");
-        const assetsApp = firebase.initializeApp(assetsFirebaseConfig, "assetsApp");
-
-        // Get database references
-        const homeDatabase = firebase.database(homeApp);
-        const assetsDatabase = firebase.database(assetsApp);
+        // Get database references for both apps
+        const primaryDatabase = firebase.database(primaryApp);
+        const secondaryDatabase = firebase.database(secondaryApp);
 
         const IMGBB_API_KEY = 'ac36a174ebd65fec02ea7f14ed716a20';
         const DEFAULT_THUMBNAIL = 'image.png';
         const DEFAULT_PROFILE_PIC = 'profile.png';
-        const BASE_URL = window.location.href.split('?')[0];
+        const BASE_URL = 'https://yuwansingh.github.io/Hellogays/';
 
-        // DOM elements
         const searchHeader = document.getElementById('search-header');
         const contentArea = document.getElementById('content-area');
         const bottomNav = document.getElementById('bottom-nav');
         const floatingUploadBtn = document.getElementById('floating-upload-btn');
         const uploadFormModal = document.getElementById('upload-form-modal');
-        const uploadFormTitle = document.getElementById('upload-form-title');
+        const assetsUploadFormModal = document.getElementById('assets-upload-form-modal');
         const closeModal = document.querySelector('.close-modal');
+        const closeAssetsModal = document.querySelector('.close-assets-modal');
         const submitBtn = document.getElementById('submit-btn');
+        const assetsSubmitBtn = document.getElementById('assets-submit-btn');
         const submitLoader = document.getElementById('submit-loader');
+        const assetsSubmitLoader = document.getElementById('assets-submit-loader');
         const thumbnailUpload = document.getElementById('thumbnail-upload');
+        const assetsThumbnailUpload = document.getElementById('assets-thumbnail-upload');
         const thumbnailPreview = document.getElementById('thumbnail-preview');
+        const assetsThumbnailPreview = document.getElementById('assets-thumbnail-preview');
         const homeBtn = document.getElementById('home-btn');
         const assetsBtn = document.getElementById('assets-btn');
         const profileBtn = document.getElementById('profile-btn');
@@ -1309,35 +1387,35 @@
         const shareLinkInput = document.getElementById('share-link-input');
         const closeShare = document.querySelector('.close-share');
         const shareDetailBtn = document.getElementById('share-detail-btn');
-        const sidebar = document.getElementById('sidebar');
-        const homeTab = document.getElementById('home-tab');
-        const assetsTab = document.getElementById('assets-tab');
-        const tabContainer = document.getElementById('tab-container');
-        const assetsWarning = document.getElementById('assets-warning');
 
         let currentUser = null;
         let thumbnailFile = null;
+        let assetsThumbnailFile = null;
         let mapToDelete = null;
         let currentMapToShare = null;
-        let currentDatabase = homeDatabase; // Default to home database
-        let currentTab = 'home'; // 'home' or 'assets'
-        let currentProfileTab = 'home'; // For profile page
+        let currentDatabase = 'primary'; // 'primary' or 'assets'
+        let currentPage = 'home'; // 'home', 'assets', or 'profile'
 
-        // Toggle sidebar function
         function toggleSidebar() {
-            sidebar.classList.toggle('active');
+            document.getElementById('sidebar').classList.toggle('active');
         }
 
-        // Open external link
         function openLink(url) {
             window.open(url, '_blank');
         }
 
-        function showToast(message, duration = 3000) {
+        function showToast(message, duration = 3000, isAssets = false) {
             const toast = document.getElementById('toast');
             const toastMessage = document.getElementById('toast-message');
             
             toastMessage.textContent = message;
+            
+            if (isAssets) {
+                toast.classList.add('assets-toast');
+            } else {
+                toast.classList.remove('assets-toast');
+            }
+            
             toast.classList.add('show');
             
             setTimeout(() => {
@@ -1394,29 +1472,15 @@
             
             if (mapId) {
                 // If there's a map ID in the URL, show that map directly
-                // First try home database
-                homeDatabase.ref('maps/' + mapId).once('value')
+                const dbRef = currentDatabase === 'primary' ? primaryDatabase : secondaryDatabase;
+                dbRef.ref('maps/' + mapId).once('value')
                     .then(snapshot => {
                         const mapData = snapshot.val();
                         if (mapData) {
                             showMapDetail({ id: mapId, ...mapData });
-                            return;
+                        } else {
+                            loadHomepage();
                         }
-                        
-                        // If not found in home, try assets database
-                        return assetsDatabase.ref('maps/' + mapId).once('value');
-                    })
-                    .then(snapshot => {
-                        if (snapshot) {
-                            const mapData = snapshot.val();
-                            if (mapData) {
-                                showMapDetail({ id: mapId, ...mapData });
-                                return;
-                            }
-                        }
-                        
-                        // If not found in either database
-                        loadHomepage();
                     })
                     .catch(() => {
                         loadHomepage();
@@ -1427,42 +1491,38 @@
                 if (loggedInUser) {
                     currentUser = JSON.parse(loggedInUser);
                 }
-                
-                // Always show bottom nav and floating upload button
-                bottomNav.style.display = 'flex';
-                floatingUploadBtn.style.display = 'flex';
-                
-                // Hide profile button if not logged in
-                if (currentUser) {
-                    profileBtn.style.display = 'flex';
-                } else {
-                    profileBtn.style.display = 'none';
-                }
-                
                 loadHomepage();
             }
         }
 
-        function showAppContent() {
-            bottomNav.style.display = 'flex';
-            floatingUploadBtn.style.display = 'flex';
-            
-            if (currentUser) {
-                profileBtn.style.display = 'flex';
+        function updateFloatingButtonStyle() {
+            if (currentPage === 'assets') {
+                floatingUploadBtn.classList.add('assets-floating-btn');
+                floatingUploadBtn.classList.remove('primary-floating-btn');
             } else {
-                profileBtn.style.display = 'none';
+                floatingUploadBtn.classList.add('primary-floating-btn');
+                floatingUploadBtn.classList.remove('assets-floating-btn');
             }
         }
 
-        function hideAppContent() {
-            bottomNav.style.display = 'flex';
-            floatingUploadBtn.style.display = 'flex';
-            profileBtn.style.display = 'none';
+        function updateNavButtons() {
+            // Remove active classes from all buttons
+            homeBtn.classList.remove('active');
+            assetsBtn.classList.remove('active');
+            profileBtn.classList.remove('active');
+            
+            // Add active class to current page button
+            if (currentPage === 'home') {
+                homeBtn.classList.add('active');
+            } else if (currentPage === 'assets') {
+                assetsBtn.classList.add('active', 'assets-active');
+            } else if (currentPage === 'profile') {
+                profileBtn.classList.add('active');
+            }
         }
 
         function login(username, password) {
-            // We'll use home database for user authentication
-            homeDatabase.ref('users').orderByChild('username').equalTo(username).once('value')
+            primaryDatabase.ref('users').orderByChild('username').equalTo(username).once('value')
                 .then(snapshot => {
                     const users = snapshot.val();
                     if (!users) {
@@ -1489,12 +1549,12 @@
                     
                     loginError.textContent = '';
                     showToast('Login successful!');
-                    showAppContent();
                     loginModal.style.display = 'none';
                     
-                    // Show the upload form if it was triggered
-                    if (uploadFormModal.style.display === 'flex') {
-                        showUploadForm();
+                    if (currentPage === 'assets') {
+                        assetsUploadFormModal.style.display = 'flex';
+                    } else {
+                        uploadFormModal.style.display = 'flex';
                     }
                 })
                 .catch(error => {
@@ -1503,14 +1563,13 @@
         }
 
         function register(username, password) {
-            // We'll use home database for user registration
-            homeDatabase.ref('usernames').once('value')
+            primaryDatabase.ref('usernames').once('value')
                 .then(snapshot => {
                     if (snapshot.hasChild(username)) {
                         throw new Error('Username already exists');
                     }
                     
-                    const newUserRef = homeDatabase.ref('users').push();
+                    const newUserRef = primaryDatabase.ref('users').push();
                     const userId = newUserRef.key;
                     
                     return newUserRef.set({
@@ -1519,7 +1578,7 @@
                         profilePic: DEFAULT_PROFILE_PIC,
                         createdAt: firebase.database.ServerValue.TIMESTAMP
                     }).then(() => {
-                        return homeDatabase.ref('usernames/' + username).set(true);
+                        return primaryDatabase.ref('usernames/' + username).set(true);
                     }).then(() => {
                         return {
                             uid: userId,
@@ -1533,12 +1592,12 @@
                     showToast('Registration successful!');
                     currentUser = userData;
                     localStorage.setItem('currentUser', JSON.stringify(currentUser));
-                    showAppContent();
                     loginModal.style.display = 'none';
                     
-                    // Show the upload form if it was triggered
-                    if (uploadFormModal.style.display === 'flex') {
-                        showUploadForm();
+                    if (currentPage === 'assets') {
+                        assetsUploadFormModal.style.display = 'flex';
+                    } else {
+                        uploadFormModal.style.display = 'flex';
                     }
                 })
                 .catch(error => {
@@ -1550,14 +1609,13 @@
             recoveryError.textContent = '';
             recoveryResult.style.display = 'none';
             
-            // We'll use home database for password recovery
-            homeDatabase.ref('usernames/' + username).once('value')
+            primaryDatabase.ref('usernames/' + username).once('value')
                 .then(snapshot => {
                     if (!snapshot.exists()) {
                         throw new Error('Username not found');
                     }
                     
-                    return homeDatabase.ref('users').orderByChild('username').equalTo(username).once('value');
+                    return primaryDatabase.ref('users').orderByChild('username').equalTo(username).once('value');
                 })
                 .then(snapshot => {
                     const users = snapshot.val();
@@ -1577,37 +1635,13 @@
         }
 
         function loadHomepage() {
-            currentTab = 'home';
-            currentDatabase = homeDatabase;
-            updateTabUI();
-            loadMaps(currentDatabase);
-        }
-
-        function loadAssetsPage() {
-            currentTab = 'assets';
-            currentDatabase = assetsDatabase;
-            updateTabUI();
-            loadMaps(currentDatabase);
-        }
-
-        function updateTabUI() {
-            // Update main content tabs
-            homeTab.classList.toggle('active', currentTab === 'home');
-            assetsTab.classList.toggle('active', currentTab === 'assets');
-            assetsWarning.style.display = currentTab === 'assets' ? 'block' : 'none';
+            currentPage = 'home';
+            updateNavButtons();
+            updateFloatingButtonStyle();
             
-            // Update bottom nav buttons
-            homeBtn.style.color = currentTab === 'home' ? 'var(--primary-color)' : '#777';
-            assetsBtn.style.color = currentTab === 'assets' ? 'var(--primary-color)' : '#777';
-            
-            // Update upload form title
-            uploadFormTitle.textContent = currentTab === 'home' ? 'Upload Home Map' : 'Upload Assets Map';
-        }
-
-        function loadMaps(database) {
             contentArea.innerHTML = '<div class="loading">Loading maps...</div>';
             
-            database.ref('maps').once('value')
+            primaryDatabase.ref('maps').once('value')
                 .then(snapshot => {
                     const maps = snapshot.val();
                     contentArea.innerHTML = '';
@@ -1627,7 +1661,7 @@
                                 deleteBtn.style.display = 'flex';
                                 deleteBtn.addEventListener('click', (e) => {
                                     e.stopPropagation();
-                                    showDeleteConfirmation(mapData);
+                                    showDeleteConfirmation(mapData, 'primary');
                                 });
                             } else {
                                 deleteBtn.style.display = 'none';
@@ -1651,7 +1685,7 @@
                             });
                             
                             const uploaderInfo = card.querySelector('.uploader-info');
-                            homeDatabase.ref('users/' + mapData.uploaderId).once('value')
+                            primaryDatabase.ref('users/' + mapData.uploaderId).once('value')
                                 .then(userSnapshot => {
                                     const user = userSnapshot.val();
                                     if (user) {
@@ -1676,31 +1710,109 @@
                 });
         }
 
-        function showDeleteConfirmation(mapData) {
+        function loadAssetsPage() {
+            currentPage = 'assets';
+            updateNavButtons();
+            updateFloatingButtonStyle();
+            
+            contentArea.innerHTML = '<div class="loading">Loading assets maps...</div>';
+            
+            secondaryDatabase.ref('maps').once('value')
+                .then(snapshot => {
+                    const maps = snapshot.val();
+                    contentArea.innerHTML = '';
+                    
+                    if (maps) {
+                        let mapsArray = Object.entries(maps).map(([id, map]) => ({ id, ...map }));
+                        mapsArray = shuffleArray(mapsArray);
+                        
+                        mapsArray.forEach(mapData => {
+                            const card = mapCardTemplate.content.cloneNode(true);
+                            card.querySelector('.map-thumbnail').src = mapData.thumbnail || DEFAULT_THUMBNAIL;
+                            card.querySelector('.map-title').textContent = mapData.title;
+                            card.querySelector('.map-code').textContent = mapData.code;
+                            
+                            // Change copy button style for assets
+                            const copyButton = card.querySelector('.copy-btn');
+                            copyButton.classList.add('assets-copy-btn');
+                            
+                            const deleteBtn = card.querySelector('.delete-btn');
+                            if (currentUser && mapData.uploaderId === currentUser.uid) {
+                                deleteBtn.style.display = 'flex';
+                                deleteBtn.addEventListener('click', (e) => {
+                                    e.stopPropagation();
+                                    showDeleteConfirmation(mapData, 'assets');
+                                });
+                            } else {
+                                deleteBtn.style.display = 'none';
+                            }
+                            
+                            copyButton.addEventListener('click', (e) => {
+                                e.stopPropagation();
+                                navigator.clipboard.writeText(mapData.code);
+                                showToast(`Map code "${mapData.code}" copied!`, 3000, true);
+                            });
+                            
+                            const shareButton = card.querySelector('.share-btn');
+                            shareButton.addEventListener('click', (e) => {
+                                e.stopPropagation();
+                                showShareModal(mapData);
+                            });
+                            
+                            card.querySelector('.map-card').addEventListener('click', () => {
+                                showMapDetail(mapData);
+                            });
+                            
+                            const uploaderInfo = card.querySelector('.uploader-info');
+                            primaryDatabase.ref('users/' + mapData.uploaderId).once('value')
+                                .then(userSnapshot => {
+                                    const user = userSnapshot.val();
+                                    if (user) {
+                                        uploaderInfo.querySelector('.uploader-name').textContent = user.username;
+                                        uploaderInfo.querySelector('.profile-pic').src = user.profilePic || DEFAULT_PROFILE_PIC;
+                                        
+                                        uploaderInfo.addEventListener('click', (e) => {
+                                            e.stopPropagation();
+                                            viewUserProfile(mapData.uploaderId);
+                                        });
+                                    }
+                                });
+                            
+                            contentArea.appendChild(card);
+                        });
+                    } else {
+                        contentArea.innerHTML = '<p>No assets maps found. Be the first to upload one!</p>';
+                    }
+                })
+                .catch(error => {
+                    contentArea.innerHTML = `<p>Error loading assets maps: ${error.message}</p>`;
+                });
+        }
+
+        function showDeleteConfirmation(mapData, dbType) {
             mapToDelete = mapData;
+            currentDatabase = dbType;
             confirmDeleteModal.style.display = 'flex';
         }
 
         function deleteMap() {
             if (!mapToDelete || !currentUser) return;
             
-            // Determine which database to use based on current tab
-            const database = currentTab === 'home' ? homeDatabase : assetsDatabase;
+            const dbRef = currentDatabase === 'primary' ? primaryDatabase : secondaryDatabase;
             
-            database.ref('maps/' + mapToDelete.id).remove()
+            dbRef.ref('maps/' + mapToDelete.id).remove()
                 .then(() => {
-                    showToast('Map deleted successfully!');
+                    showToast('Map deleted successfully!', 3000, currentDatabase === 'assets');
                     confirmDeleteModal.style.display = 'none';
                     
-                    // Reload the current view
-                    if (currentTab === 'home') {
-                        loadHomepage();
-                    } else if (currentTab === 'assets') {
+                    if (currentPage === 'assets') {
                         loadAssetsPage();
+                    } else {
+                        loadHomepage();
                     }
                 })
                 .catch(error => {
-                    showToast('Error deleting map: ' + error.message);
+                    showToast('Error deleting map: ' + error.message, 3000, currentDatabase === 'assets');
                 });
         }
 
@@ -1719,7 +1831,7 @@
             document.getElementById('detail-description').textContent = mapData.description || 'No description provided.';
             
             const uploaderInfo = document.getElementById('detail-uploader');
-            homeDatabase.ref('users/' + mapData.uploaderId).once('value')
+            primaryDatabase.ref('users/' + mapData.uploaderId).once('value')
                 .then(userSnapshot => {
                     const user = userSnapshot.val();
                     if (user) {
@@ -1732,9 +1844,10 @@
                     }
                 });
             
-            document.getElementById('copy-detail-code').addEventListener('click', () => {
+            const copyButton = document.getElementById('copy-detail-code');
+            copyButton.addEventListener('click', () => {
                 navigator.clipboard.writeText(mapData.code);
-                showToast(`Map code "${mapData.code}" copied!`);
+                showToast(`Map code "${mapData.code}" copied!`, 3000, currentPage === 'assets');
             });
 
             shareDetailBtn.addEventListener('click', (e) => {
@@ -1755,7 +1868,7 @@
         function copyShareLink() {
             shareLinkInput.select();
             document.execCommand('copy');
-            showToast('Link copied to clipboard!');
+            showToast('Link copied to clipboard!', 3000, currentPage === 'assets');
         }
 
         function shareViaWhatsApp() {
@@ -1780,7 +1893,7 @@
             
             contentArea.innerHTML = '<div class="loading">Loading profile...</div>';
             
-            homeDatabase.ref('users/' + userId).once('value')
+            primaryDatabase.ref('users/' + userId).once('value')
                 .then(userSnapshot => {
                     const userData = userSnapshot.val();
                     
@@ -1800,7 +1913,7 @@
                                     showToast('Uploading profile picture...');
                                     const imageUrl = await uploadImageToImgBB(file);
                                     
-                                    await homeDatabase.ref('users/' + userId).update({
+                                    await primaryDatabase.ref('users/' + userId).update({
                                         profilePic: imageUrl
                                     });
                                     
@@ -1820,103 +1933,110 @@
                     if (userId !== currentUser?.uid) {
                         logoutBtn.innerHTML = '<i class="fas fa-arrow-left"></i> Back';
                         logoutBtn.style.backgroundColor = '#4a6bff';
-                        logoutBtn.addEventListener('click', loadHomepage);
+                        logoutBtn.addEventListener('click', () => {
+                            if (currentPage === 'assets') {
+                                loadAssetsPage();
+                            } else {
+                                loadHomepage();
+                            }
+                        });
                     } else {
                         logoutBtn.addEventListener('click', () => {
                             currentUser = null;
                             localStorage.removeItem('currentUser');
-                            hideAppContent();
                             loadHomepage();
                         });
                     }
                     
                     const uploadedMapsContainer = profilePage.getElementById('uploaded-maps-container');
-                    const profileTabContainer = profilePage.getElementById('profile-tab-container');
-                    const profileHomeTab = profilePage.getElementById('profile-home-tab');
-                    const profileAssetsTab = profilePage.getElementById('profile-assets-tab');
                     
-                    // Set up profile tabs
-                    profileHomeTab.addEventListener('click', () => {
-                        currentProfileTab = 'home';
-                        profileHomeTab.classList.add('active');
-                        profileAssetsTab.classList.remove('active');
-                        loadUserMaps(userId, homeDatabase, uploadedMapsContainer);
-                    });
+                    // Load maps from both databases
+                    const primaryPromise = primaryDatabase.ref('maps').orderByChild('uploaderId').equalTo(userId).once('value');
+                    const secondaryPromise = secondaryDatabase.ref('maps').orderByChild('uploaderId').equalTo(userId).once('value');
                     
-                    profileAssetsTab.addEventListener('click', () => {
-                        currentProfileTab = 'assets';
-                        profileHomeTab.classList.remove('active');
-                        profileAssetsTab.classList.add('active');
-                        loadUserMaps(userId, assetsDatabase, uploadedMapsContainer);
-                    });
-                    
-                    // Load home maps by default
-                    currentProfileTab = 'home';
-                    profileHomeTab.classList.add('active');
-                    loadUserMaps(userId, homeDatabase, uploadedMapsContainer);
+                    Promise.all([primaryPromise, secondaryPromise])
+                        .then(([primarySnapshot, secondarySnapshot]) => {
+                            const primaryMaps = primarySnapshot.val() || {};
+                            const secondaryMaps = secondarySnapshot.val() || {};
+                            
+                            let allMaps = [];
+                            
+                            // Add primary maps with database type
+                            Object.entries(primaryMaps).forEach(([id, map]) => {
+                                allMaps.push({ id, ...map, dbType: 'primary' });
+                            });
+                            
+                            // Add secondary maps with database type
+                            Object.entries(secondaryMaps).forEach(([id, map]) => {
+                                allMaps.push({ id, ...map, dbType: 'assets' });
+                            });
+                            
+                            // Sort by timestamp if available
+                            allMaps.sort((a, b) => {
+                                const timeA = a.createdAt || 0;
+                                const timeB = b.createdAt || 0;
+                                return timeB - timeA;
+                            });
+                            
+                            if (allMaps.length > 0) {
+                                allMaps.forEach(mapData => {
+                                    const card = mapCardTemplate.content.cloneNode(true);
+                                    card.querySelector('.map-thumbnail').src = mapData.thumbnail || DEFAULT_THUMBNAIL;
+                                    card.querySelector('.map-title').textContent = mapData.title;
+                                    card.querySelector('.map-code').textContent = mapData.code;
+                                    
+                                    // Style differently for assets
+                                    if (mapData.dbType === 'assets') {
+                                        const copyButton = card.querySelector('.copy-btn');
+                                        copyButton.classList.add('assets-copy-btn');
+                                    }
+                                    
+                                    const deleteBtn = card.querySelector('.delete-btn');
+                                    if (currentUser && mapData.uploaderId === currentUser.uid) {
+                                        deleteBtn.style.display = 'flex';
+                                        deleteBtn.addEventListener('click', (e) => {
+                                            e.stopPropagation();
+                                            showDeleteConfirmation(mapData, mapData.dbType);
+                                        });
+                                    } else {
+                                        deleteBtn.style.display = 'none';
+                                    }
+                                    
+                                    const copyButton = card.querySelector('.copy-btn');
+                                    copyButton.addEventListener('click', (e) => {
+                                        e.stopPropagation();
+                                        navigator.clipboard.writeText(mapData.code);
+                                        showToast(`Map code "${mapData.code}" copied!`, 3000, mapData.dbType === 'assets');
+                                    });
+
+                                    const shareButton = card.querySelector('.share-btn');
+                                    shareButton.addEventListener('click', (e) => {
+                                        e.stopPropagation();
+                                        showShareModal(mapData);
+                                    });
+                                    
+                                    card.querySelector('.map-card').addEventListener('click', () => {
+                                        showMapDetail(mapData);
+                                    });
+                                    
+                                    card.querySelector('.uploader-info').style.display = 'none';
+                                    
+                                    uploadedMapsContainer.appendChild(card);
+                                });
+                            } else {
+                                uploadedMapsContainer.innerHTML = '<p>No maps uploaded yet.</p>';
+                            }
+                        });
                     
                     contentArea.innerHTML = '';
                     contentArea.appendChild(profilePage);
                 });
         }
 
-        function loadUserMaps(userId, database, container) {
-            container.innerHTML = '<div class="loading">Loading maps...</div>';
-            
-            database.ref('maps').orderByChild('uploaderId').equalTo(userId).once('value')
-                .then(mapsSnapshot => {
-                    const userMaps = mapsSnapshot.val();
-                    container.innerHTML = '';
-                    
-                    if (userMaps) {
-                        let mapsArray = Object.entries(userMaps).map(([id, map]) => ({ id, ...map }));
-                        mapsArray.reverse();
-                        
-                        mapsArray.forEach(mapData => {
-                            const card = mapCardTemplate.content.cloneNode(true);
-                            card.querySelector('.map-thumbnail').src = mapData.thumbnail || DEFAULT_THUMBNAIL;
-                            card.querySelector('.map-title').textContent = mapData.title;
-                            card.querySelector('.map-code').textContent = mapData.code;
-                            
-                            const deleteBtn = card.querySelector('.delete-btn');
-                            if (currentUser && mapData.uploaderId === currentUser.uid) {
-                                deleteBtn.style.display = 'flex';
-                                deleteBtn.addEventListener('click', (e) => {
-                                    e.stopPropagation();
-                                    showDeleteConfirmation(mapData);
-                                });
-                            } else {
-                                deleteBtn.style.display = 'none';
-                            }
-                            
-                            const copyButton = card.querySelector('.copy-btn');
-                            copyButton.addEventListener('click', (e) => {
-                                e.stopPropagation();
-                                navigator.clipboard.writeText(mapData.code);
-                                showToast(`Map code "${mapData.code}" copied!`);
-                            });
-
-                            const shareButton = card.querySelector('.share-btn');
-                            shareButton.addEventListener('click', (e) => {
-                                e.stopPropagation();
-                                showShareModal(mapData);
-                            });
-                            
-                            card.querySelector('.map-card').addEventListener('click', () => {
-                                showMapDetail(mapData);
-                            });
-                            
-                            card.querySelector('.uploader-info').style.display = 'none';
-                            
-                            container.appendChild(card);
-                        });
-                    } else {
-                        container.innerHTML = '<p>No maps uploaded yet.</p>';
-                    }
-                });
-        }
-
         function loadProfilePage() {
+            currentPage = 'profile';
+            updateNavButtons();
+            
             if (currentUser) {
                 viewUserProfile(currentUser.uid);
             } else {
@@ -1925,48 +2045,30 @@
             }
         }
 
-        function showUploadForm() {
-            if (!currentUser) {
-                loginModal.style.display = 'flex';
-                uploadFormModal.style.display = 'none';
-                return;
-            }
-            
-            uploadFormTitle.textContent = currentTab === 'home' ? 'Upload Home Map' : 'Upload Assets Map';
-            uploadFormModal.style.display = 'flex';
-        }
-
-        async function uploadMap(title, code, youtubeUrl, description) {
+        async function uploadMap(title, code, youtubeUrl, description, isAssets = false) {
             if (!title || !code) {
-                showToast('Please fill in all required fields');
+                showToast('Please fill in all required fields', 3000, isAssets);
                 return;
             }
             
             if (!currentUser) {
-                showToast('Please login to upload maps');
+                showToast('Please login to upload maps', 3000, isAssets);
+                loginModal.style.display = 'flex';
                 return;
             }
             
-            // Check if the map code starts with "assets" when uploading to home
-            if (currentTab === 'home' && code.toLowerCase().startsWith('assets')) {
-                showToast('Error: Assets maps cannot be uploaded to home section');
-                return;
-            }
+            const loader = isAssets ? assetsSubmitLoader : submitLoader;
+            const btn = isAssets ? assetsSubmitBtn : submitBtn;
             
-            // Check if the map code doesn't start with "assets" when uploading to assets
-            if (currentTab === 'assets' && !code.toLowerCase().startsWith('assets')) {
-                showToast('Error: Only assets maps can be uploaded to assets section');
-                return;
-            }
-            
-            submitLoader.style.display = 'block';
-            submitBtn.disabled = true;
+            loader.style.display = 'block';
+            btn.disabled = true;
             
             try {
                 let thumbnailUrl = DEFAULT_THUMBNAIL;
+                const thumbnail = isAssets ? assetsThumbnailFile : thumbnailFile;
                 
-                if (thumbnailFile) {
-                    thumbnailUrl = await uploadImageToImgBB(thumbnailFile);
+                if (thumbnail) {
+                    thumbnailUrl = await uploadImageToImgBB(thumbnail);
                 }
                 
                 const mapData = {
@@ -1980,34 +2082,42 @@
                     thumbnail: thumbnailUrl
                 };
                 
-                // Use the appropriate database based on current tab
-                const database = currentTab === 'home' ? homeDatabase : assetsDatabase;
-                const newMapRef = database.ref('maps').push();
+                const dbRef = isAssets ? secondaryDatabase : primaryDatabase;
+                const newMapRef = dbRef.ref('maps').push();
                 await newMapRef.set(mapData);
                 
-                submitLoader.style.display = 'none';
-                submitBtn.disabled = false;
-                uploadFormModal.style.display = 'none';
+                loader.style.display = 'none';
+                btn.disabled = false;
                 
-                document.getElementById('map-title').value = '';
-                document.getElementById('map-code').value = '';
-                document.getElementById('youtube-url').value = '';
-                document.getElementById('description').value = '';
-                thumbnailPreview.style.display = 'none';
-                thumbnailFile = null;
+                if (isAssets) {
+                    assetsUploadFormModal.style.display = 'none';
+                    document.getElementById('assets-map-title').value = '';
+                    document.getElementById('assets-map-code').value = '';
+                    document.getElementById('assets-youtube-url').value = '';
+                    document.getElementById('assets-description').value = '';
+                    assetsThumbnailPreview.style.display = 'none';
+                    assetsThumbnailFile = null;
+                } else {
+                    uploadFormModal.style.display = 'none';
+                    document.getElementById('map-title').value = '';
+                    document.getElementById('map-code').value = '';
+                    document.getElementById('youtube-url').value = '';
+                    document.getElementById('description').value = '';
+                    thumbnailPreview.style.display = 'none';
+                    thumbnailFile = null;
+                }
                 
-                showToast('Map uploaded successfully!');
+                showToast('Map uploaded successfully!', 3000, isAssets);
                 
-                // Reload the current view
-                if (currentTab === 'home') {
-                    loadHomepage();
-                } else if (currentTab === 'assets') {
+                if (isAssets) {
                     loadAssetsPage();
+                } else {
+                    loadHomepage();
                 }
             } catch (error) {
-                submitLoader.style.display = 'none';
-                submitBtn.disabled = false;
-                showToast('Error uploading map: ' + error.message);
+                loader.style.display = 'none';
+                btn.disabled = false;
+                showToast('Error uploading map: ' + error.message, 3000, isAssets);
             }
         }
 
@@ -2016,6 +2126,13 @@
             mapCodeInput.select();
             document.execCommand('copy');
             showToast('Map code copied!');
+        }
+
+        function copyAssetsMapCode() {
+            const mapCodeInput = document.getElementById('assets-map-code');
+            mapCodeInput.select();
+            document.execCommand('copy');
+            showToast('Map code copied!', 3000, true);
         }
 
         document.addEventListener('DOMContentLoaded', () => {
@@ -2070,18 +2187,25 @@
                 document.getElementById('login-container').style.display = 'block';
             });
             
-            floatingUploadBtn.addEventListener('click', showUploadForm);
-            
-            homeBtn.addEventListener('click', loadHomepage);
-            assetsBtn.addEventListener('click', loadAssetsPage);
-            profileBtn.addEventListener('click', loadProfilePage);
-            
-            // Set up content tabs
-            homeTab.addEventListener('click', loadHomepage);
-            assetsTab.addEventListener('click', loadAssetsPage);
+            floatingUploadBtn.addEventListener('click', () => {
+                if (!currentUser) {
+                    loginModal.style.display = 'flex';
+                    return;
+                }
+                
+                if (currentPage === 'assets') {
+                    assetsUploadFormModal.style.display = 'flex';
+                } else {
+                    uploadFormModal.style.display = 'flex';
+                }
+            });
             
             closeModal.addEventListener('click', () => {
                 uploadFormModal.style.display = 'none';
+            });
+            
+            closeAssetsModal.addEventListener('click', () => {
+                assetsUploadFormModal.style.display = 'none';
             });
             
             closeLoginModal.addEventListener('click', () => {
@@ -2098,7 +2222,16 @@
                 const youtubeUrl = document.getElementById('youtube-url').value;
                 const description = document.getElementById('description').value;
                 
-                uploadMap(title, code, youtubeUrl, description);
+                uploadMap(title, code, youtubeUrl, description, false);
+            });
+            
+            assetsSubmitBtn.addEventListener('click', () => {
+                const title = document.getElementById('assets-map-title').value;
+                const code = document.getElementById('assets-map-code').value;
+                const youtubeUrl = document.getElementById('assets-youtube-url').value;
+                const description = document.getElementById('assets-description').value;
+                
+                uploadMap(title, code, youtubeUrl, description, true);
             });
             
             thumbnailUpload.addEventListener('change', (event) => {
@@ -2118,6 +2251,27 @@
                 }
             });
             
+            assetsThumbnailUpload.addEventListener('change', (event) => {
+                const file = event.target.files[0];
+                if (file) {
+                    assetsThumbnailFile = file;
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        assetsThumbnailPreview.src = e.target.result;
+                        assetsThumbnailPreview.style.display = 'block';
+                    };
+                    reader.readAsDataURL(file);
+                } else {
+                    assetsThumbnailPreview.src = '#';
+                    assetsThumbnailPreview.style.display = 'none';
+                    assetsThumbnailFile = null;
+                }
+            });
+            
+            homeBtn.addEventListener('click', loadHomepage);
+            assetsBtn.addEventListener('click', loadAssetsPage);
+            profileBtn.addEventListener('click', loadProfilePage);
+            
             closeDetail.addEventListener('click', () => {
                 mapDetailModal.style.display = 'none';
             });
@@ -2125,6 +2279,9 @@
             window.addEventListener('click', (event) => {
                 if (event.target === uploadFormModal) {
                     uploadFormModal.style.display = 'none';
+                }
+                if (event.target === assetsUploadFormModal) {
+                    assetsUploadFormModal.style.display = 'none';
                 }
                 if (event.target === mapDetailModal) {
                     mapDetailModal.style.display = 'none';
@@ -2140,9 +2297,6 @@
                 }
                 if (event.target === shareModal) {
                     shareModal.style.display = 'none';
-                }
-                if (event.target === sidebar) {
-                    sidebar.classList.remove('active');
                 }
             });
             
