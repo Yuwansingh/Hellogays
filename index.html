@@ -989,6 +989,11 @@
             border-radius: 5px;
             cursor: pointer;
             font-weight: bold;
+            background-color: var(--input-bg);
+            color: var(--text-color);
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
         .database-selector button.active {
@@ -996,8 +1001,39 @@
             color: white;
         }
 
-        .assets-database-selector button.active {
+        .database-selector button.active.assets-active {
             background-color: var(--assets-color);
+        }
+
+        .profile-database-btn {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            background-color: var(--input-bg);
+            color: var(--text-color);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex: 1;
+            min-width: 120px;
+        }
+
+        .profile-database-btn.active {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .profile-database-btn.active.assets-active {
+            background-color: var(--assets-color);
+        }
+
+        #profile-database-selector {
+            margin: 15px 0;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
         }
 
         @keyframes spin {
@@ -1299,6 +1335,13 @@
                 </div>
                 <button class="logout-btn" id="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</button>
             </div>
+            
+            <!-- Add database selector buttons -->
+            <div class="database-selector" id="profile-database-selector">
+                <button class="profile-database-btn" data-db="primary"><i class="fas fa-home"></i> Home Maps</button>
+                <button class="profile-database-btn" data-db="assets"><i class="fas fa-coins"></i> Asset Maps</button>
+            </div>
+            
             <h3 style="margin-bottom: 15px;">Your Uploaded Maps</h3>
             <div id="uploaded-maps-container">
                 <!-- User's uploaded maps will be inserted here -->
@@ -1949,84 +1992,101 @@
                     }
                     
                     const uploadedMapsContainer = profilePage.getElementById('uploaded-maps-container');
+                    const databaseSelector = profilePage.getElementById('profile-database-selector');
+                    const dbButtons = databaseSelector.querySelectorAll('.profile-database-btn');
                     
-                    // Load maps from both databases
-                    const primaryPromise = primaryDatabase.ref('maps').orderByChild('uploaderId').equalTo(userId).once('value');
-                    const secondaryPromise = secondaryDatabase.ref('maps').orderByChild('uploaderId').equalTo(userId).once('value');
-                    
-                    Promise.all([primaryPromise, secondaryPromise])
-                        .then(([primarySnapshot, secondarySnapshot]) => {
-                            const primaryMaps = primarySnapshot.val() || {};
-                            const secondaryMaps = secondarySnapshot.val() || {};
-                            
-                            let allMaps = [];
-                            
-                            // Add primary maps with database type
-                            Object.entries(primaryMaps).forEach(([id, map]) => {
-                                allMaps.push({ id, ...map, dbType: 'primary' });
-                            });
-                            
-                            // Add secondary maps with database type
-                            Object.entries(secondaryMaps).forEach(([id, map]) => {
-                                allMaps.push({ id, ...map, dbType: 'assets' });
-                            });
-                            
-                            // Sort by timestamp if available
-                            allMaps.sort((a, b) => {
-                                const timeA = a.createdAt || 0;
-                                const timeB = b.createdAt || 0;
-                                return timeB - timeA;
-                            });
-                            
-                            if (allMaps.length > 0) {
-                                allMaps.forEach(mapData => {
-                                    const card = mapCardTemplate.content.cloneNode(true);
-                                    card.querySelector('.map-thumbnail').src = mapData.thumbnail || DEFAULT_THUMBNAIL;
-                                    card.querySelector('.map-title').textContent = mapData.title;
-                                    card.querySelector('.map-code').textContent = mapData.code;
-                                    
-                                    // Style differently for assets
-                                    if (mapData.dbType === 'assets') {
-                                        const copyButton = card.querySelector('.copy-btn');
-                                        copyButton.classList.add('assets-copy-btn');
-                                    }
-                                    
-                                    const deleteBtn = card.querySelector('.delete-btn');
-                                    if (currentUser && mapData.uploaderId === currentUser.uid) {
-                                        deleteBtn.style.display = 'flex';
-                                        deleteBtn.addEventListener('click', (e) => {
-                                            e.stopPropagation();
-                                            showDeleteConfirmation(mapData, mapData.dbType);
-                                        });
-                                    } else {
-                                        deleteBtn.style.display = 'none';
-                                    }
-                                    
-                                    const copyButton = card.querySelector('.copy-btn');
-                                    copyButton.addEventListener('click', (e) => {
-                                        e.stopPropagation();
-                                        navigator.clipboard.writeText(mapData.code);
-                                        showToast(`Map code "${mapData.code}" copied!`, 3000, mapData.dbType === 'assets');
-                                    });
-
-                                    const shareButton = card.querySelector('.share-btn');
-                                    shareButton.addEventListener('click', (e) => {
-                                        e.stopPropagation();
-                                        showShareModal(mapData);
-                                    });
-                                    
-                                    card.querySelector('.map-card').addEventListener('click', () => {
-                                        showMapDetail(mapData);
-                                    });
-                                    
-                                    card.querySelector('.uploader-info').style.display = 'none';
-                                    
-                                    uploadedMapsContainer.appendChild(card);
-                                });
+                    // Function to load maps for the profile
+                    function loadProfileMaps(dbType) {
+                        uploadedMapsContainer.innerHTML = '<div class="loading">Loading maps...</div>';
+                        
+                        // Update active button
+                        dbButtons.forEach(btn => {
+                            if (btn.dataset.db === dbType) {
+                                btn.classList.add('active');
+                                if (dbType === 'assets') {
+                                    btn.classList.add('assets-active');
+                                }
                             } else {
-                                uploadedMapsContainer.innerHTML = '<p>No maps uploaded yet.</p>';
+                                btn.classList.remove('active', 'assets-active');
                             }
                         });
+                        
+                        const dbRef = dbType === 'primary' ? primaryDatabase : secondaryDatabase;
+                        
+                        dbRef.ref('maps').orderByChild('uploaderId').equalTo(userId).once('value')
+                            .then(snapshot => {
+                                const maps = snapshot.val();
+                                uploadedMapsContainer.innerHTML = '';
+                                
+                                if (maps) {
+                                    let mapsArray = Object.entries(maps).map(([id, map]) => ({ id, ...map, dbType }));
+                                    
+                                    // Sort by timestamp if available
+                                    mapsArray.sort((a, b) => {
+                                        const timeA = a.createdAt || 0;
+                                        const timeB = b.createdAt || 0;
+                                        return timeB - timeA;
+                                    });
+                                    
+                                    mapsArray.forEach(mapData => {
+                                        const card = mapCardTemplate.content.cloneNode(true);
+                                        card.querySelector('.map-thumbnail').src = mapData.thumbnail || DEFAULT_THUMBNAIL;
+                                        card.querySelector('.map-title').textContent = mapData.title;
+                                        card.querySelector('.map-code').textContent = mapData.code;
+                                        
+                                        // Style differently for assets
+                                        if (mapData.dbType === 'assets') {
+                                            const copyButton = card.querySelector('.copy-btn');
+                                            copyButton.classList.add('assets-copy-btn');
+                                        }
+                                        
+                                        const deleteBtn = card.querySelector('.delete-btn');
+                                        if (currentUser && mapData.uploaderId === currentUser.uid) {
+                                            deleteBtn.style.display = 'flex';
+                                            deleteBtn.addEventListener('click', (e) => {
+                                                e.stopPropagation();
+                                                showDeleteConfirmation(mapData, mapData.dbType);
+                                            });
+                                        } else {
+                                            deleteBtn.style.display = 'none';
+                                        }
+                                        
+                                        const copyButton = card.querySelector('.copy-btn');
+                                        copyButton.addEventListener('click', (e) => {
+                                            e.stopPropagation();
+                                            navigator.clipboard.writeText(mapData.code);
+                                            showToast(`Map code "${mapData.code}" copied!`, 3000, mapData.dbType === 'assets');
+                                        });
+
+                                        const shareButton = card.querySelector('.share-btn');
+                                        shareButton.addEventListener('click', (e) => {
+                                            e.stopPropagation();
+                                            showShareModal(mapData);
+                                        });
+                                        
+                                        card.querySelector('.map-card').addEventListener('click', () => {
+                                            showMapDetail(mapData);
+                                        });
+                                        
+                                        card.querySelector('.uploader-info').style.display = 'none';
+                                        
+                                        uploadedMapsContainer.appendChild(card);
+                                    });
+                                } else {
+                                    uploadedMapsContainer.innerHTML = '<p>No maps uploaded yet.</p>';
+                                }
+                            });
+                    }
+                    
+                    // Add click handlers for database buttons
+                    dbButtons.forEach(btn => {
+                        btn.addEventListener('click', () => {
+                            loadProfileMaps(btn.dataset.db);
+                        });
+                    });
+                    
+                    // Load primary maps by default
+                    loadProfileMaps('primary');
                     
                     contentArea.innerHTML = '';
                     contentArea.appendChild(profilePage);
