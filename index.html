@@ -1,1 +1,177 @@
-nfkhfhkf
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Free Fire Craftaland</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+        #webview-container {
+            width: 100%;
+            height: 100vh;
+            border: none;
+        }
+        /* Network Progress Bar Styles */
+        .progress-container {
+            width: 100%;
+            height: 3px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 9999;
+            overflow: hidden;
+        }
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #ff6b6b, #4ecdc4);
+            width: 0%;
+            transition: width 0.4s ease;
+        }
+        .progress-container.hidden {
+            opacity: 0;
+            transition: opacity 0.5s ease 0.3s;
+        }
+    </style>
+</head>
+<body>
+    <!-- Network Progress Bar -->
+    <div class="progress-container" id="progressContainer">
+        <div class="progress-bar" id="progressBar"></div>
+    </div>
+    
+    <iframe id="webview-container" src="https://free-fire-craftaland.web.app" allowfullscreen></iframe>
+
+    <script>
+        // Function to handle URL clicks
+        function handleUrlClick(url) {
+            // Check for YouTube URLs
+            if (url.includes('youtube.com') || url.includes('youtu.be')) {
+                const videoId = url.match(/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/);
+                if (videoId) {
+                    window.location.href = `vnd.youtube:${videoId[1]}`;
+                    setTimeout(() => {
+                        if (!document.hidden) window.location.href = url;
+                    }, 500);
+                    return true;
+                }
+            }
+            
+            // Check for Instagram URLs
+            if (url.includes('instagram.com')) {
+                window.location.href = url.replace('https://www.instagram.com', 'instagram://');
+                setTimeout(() => {
+                    if (!document.hidden) window.location.href = url;
+                }, 500);
+                return true;
+            }
+            
+            // Check for WhatsApp URLs
+            if (url.includes('wa.me') || url.includes('whatsapp.com')) {
+                const phone = url.match(/wa\.me\/(\d+)/) || url.match(/whatsapp\.com.*\?phone=(\d+)/);
+                if (phone) {
+                    window.location.href = `whatsapp://send/?phone=${phone[1]}`;
+                    setTimeout(() => {
+                        if (!document.hidden) window.location.href = url;
+                    }, 500);
+                    return true;
+                }
+            }
+            
+            // Check for Telegram URLs
+            if (url.includes('t.me')) {
+                const username = url.match(/t\.me\/([a-zA-Z0-9_]+)/);
+                if (username) {
+                    window.location.href = `tg://resolve?domain=${username[1]}`;
+                    setTimeout(() => {
+                        if (!document.hidden) window.location.href = url;
+                    }, 500);
+                    return true;
+                }
+            }
+            
+            return false;
+        }
+
+        // Start progress bar animation
+        function startProgress() {
+            const progressBar = document.getElementById('progressBar');
+            const progressContainer = document.getElementById('progressContainer');
+            
+            progressContainer.classList.remove('hidden');
+            progressBar.style.width = '0%';
+            
+            let width = 0;
+            const interval = setInterval(() => {
+                if (width >= 80) {
+                    clearInterval(interval);
+                    return;
+                }
+                width += Math.random() * 15;
+                progressBar.style.width = width + '%';
+            }, 300);
+        }
+
+        // Complete and hide progress bar
+        function completeProgress() {
+            const progressBar = document.getElementById('progressBar');
+            const progressContainer = document.getElementById('progressContainer');
+            
+            progressBar.style.width = '100%';
+            
+            setTimeout(() => {
+                progressContainer.classList.add('hidden');
+                
+                // Reset after animation completes
+                setTimeout(() => {
+                    progressBar.style.width = '0%';
+                }, 500);
+            }, 300);
+        }
+
+        // Setup iframe event listeners
+        const iframe = document.getElementById('webview-container');
+        
+        iframe.addEventListener('load', function() {
+            completeProgress();
+            
+            try {
+                const iframeDoc = this.contentDocument || this.contentWindow.document;
+                
+                // Add click handler to all links
+                iframeDoc.addEventListener('click', function(e) {
+                    let target = e.target;
+                    while (target && target.tagName !== 'A') {
+                        target = target.parentNode;
+                    }
+                    
+                    if (target && target.tagName === 'A' && target.href) {
+                        if (handleUrlClick(target.href)) {
+                            e.preventDefault();
+                            e.stopPropagation();
+                        }
+                    }
+                }, true);
+                
+                // Handle links that open in new tabs
+                this.contentWindow.open = function(url) {
+                    if (!handleUrlClick(url)) {
+                        window.open(url, '_blank');
+                    }
+                    return { close: function() {} };
+                };
+            } catch (e) {
+                console.log('Could not access iframe content:', e);
+            }
+        });
+
+        // Start progress when loading begins
+        iframe.addEventListener('loadstart', function() {
+            startProgress();
+        });
+    </script>
+</body>
+</html>
